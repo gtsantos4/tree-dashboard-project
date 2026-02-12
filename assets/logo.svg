@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" rx="20" fill="#9B2335"/>
+  
+  <!-- Stylized tree/branch mark -->
+  <g transform="translate(200, 115)" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Trunk -->
+    <line x1="0" y1="90" x2="0" y2="10"/>
+    <!-- Main branches spreading upward -->
+    <line x1="0" y1="50" x2="-55" y2="-50"/>
+    <line x1="0" y1="50" x2="55" y2="-50"/>
+    <!-- Center branch -->
+    <line x1="0" y1="30" x2="0" y2="-60"/>
+    <!-- Secondary branches -->
+    <line x1="0" y1="70" x2="-35" y2="20"/>
+    <line x1="0" y1="70" x2="35" y2="20"/>
+    <!-- Outer small branches -->
+    <line x1="-55" y1="-50" x2="-70" y2="-80"/>
+    <line x1="55" y1="-50" x2="70" y2="-80"/>
+    <line x1="-55" y1="-50" x2="-35" y2="-85"/>
+    <line x1="55" y1="-50" x2="35" y2="-85"/>
+  </g>
+
+  <!-- Company name -->
+  <text x="200" y="270" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="28" font-weight="700" letter-spacing="3">VAN YAHRES</text>
+  <text x="200" y="305" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="24" font-weight="700" letter-spacing="3">TREE COMPANY</text>
+  
+  <!-- Since 1919 -->
+  <text x="200" y="348" text-anchor="middle" fill="white" font-family="Georgia, serif" font-size="20" font-style="italic" letter-spacing="1">Since 1919</text>
+</svg>

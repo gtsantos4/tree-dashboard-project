@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Van Yahres Tree Care — Dashboard Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ── Van Yahres Brand ── */
+    --vy-red:        #9B2335;
+    --vy-red-dark:   #7A1C2A;
+    --vy-red-light:  #C4384D;
+    --vy-red-tint:   #FDF2F3;
+    --vy-cream:      #FBF7F4;
+
+    /* ── Neutrals ── */
+    --dark:          #1E1E2E;
+    --dark-gray:     #2D2D3D;
+    --medium-gray:   #6B7280;
+    --light-gray:    #F3F4F6;
+    --white:         #FFFFFF;
+    --border:        #E5E7EB;
+
+    /* ── Semantic ── */
+    --win:           #059669;
+    --win-bg:        #ECFDF5;
+    --loss:          #DC2626;
+    --loss-bg:       #FEF2F2;
+    --amber:         #D97706;
+
+    /* ── Spacing ── */
+    --sp-xs: 4px;  --sp-sm: 8px;  --sp-md: 16px;
+    --sp-lg: 24px; --sp-xl: 32px; --sp-2xl: 48px;
+
+    /* ── Radius ── */
+    --r-sm: 6px;  --r-md: 10px;  --r-lg: 16px;  --r-xl: 20px;
+
+    /* ── Shadow ── */
+    --shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:  0 2px 8px rgba(0,0,0,0.06);
+    --shadow-lg:  0 4px 16px rgba(0,0,0,0.08);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--light-gray); color: var(--dark); }
+
+  /* ══════════════════════════════════════════════════════════════════
+     LAYOUT STRUCTURE
+     ══════════════════════════════════════════════════════════════════ */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px; background: var(--dark); color: #fff;
+    display: flex; flex-direction: column; padding: var(--sp-lg) 0;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 10;
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: var(--sp-md);
+    padding: 0 var(--sp-lg) var(--sp-xl);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: var(--sp-lg);
+  }
+  .sidebar-logo .logo-mark {
+    width: 44px; height: 44px; background: var(--vy-red); border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: #fff;
+  }
+  .sidebar-logo .logo-text { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .sidebar-logo .logo-text span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5); display: block; }
+
+  .nav-section { padding: 0 var(--sp-sm); margin-bottom: var(--sp-lg); }
+  .nav-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.35); padding: 0 var(--sp-md) var(--sp-sm); font-weight: 600; }
+  .nav-item {
+    display: flex; align-items: center; gap: var(--sp-sm); padding: 10px var(--sp-md);
+    border-radius: var(--r-sm); color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-item.active { background: var(--vy-red); color: #fff; font-weight: 600; }
+  .nav-item .icon { width: 18px; text-align: center; opacity: 0.7; }
+  .nav-item.active .icon { opacity: 1; }
+
+  /* ── Main Content ── */
+  .main { flex: 1; margin-left: 260px; padding: var(--sp-xl) var(--sp-2xl); max-width: 1400px; }
+
+  /* ── Page Header ── */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--sp-xl);
+  }
+  .page-header h1 { font-size: 22px; font-weight: 700; color: var(--dark); }
+  .page-header .breadcrumb { font-size: 12px; color: var(--medium-gray); }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    display: flex; gap: var(--sp-md); margin-bottom: var(--sp-xl);
+    padding: var(--sp-md) var(--sp-lg);
+    background: var(--white); border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  }
+  .filter-group { display: flex; flex-direction: column; gap: var(--sp-xs); }
+  .filter-group label { font-size: 11px; font-weight: 600; color: var(--medium-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-group select, .filter-group input {
+    padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--r-sm);
+    font-size: 13px; background: var(--light-gray); color: var(--dark); font-family: inherit;
+    min-width: 140px;
+  }
+  .filter-group select:focus { border-color: var(--vy-red); outline: none; box-shadow: 0 0 0 2px var(--vy-red-tint); }
+
+  /* ══════════════════════════════════════════════════════════════════
+     COMPONENTS
+     ══════════════════════════════════════════════════════════════════ */
+
+  /* ── KPI Cards ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-lg); margin-bottom: var(--sp-xl); }
+  .kpi-card {
+    background: var(--white); border-radius: var(--r-lg); padding: var(--sp-lg);
+    box-shadow: var(--shadow-card); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--vy-red);
+  }
+  .kpi-card .kpi-label { font-size: 12px; font-weight: 600; color: var(--medium-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--sp-sm); }
+  .kpi-card .kpi-value { font-size: 32px; font-weight: 700; color: var(--dark); line-height: 1.1; }
+  .kpi-card .kpi-sub { font-size: 12px; color: var(--medium-gray); margin-top: var(--sp-xs); }
+  .kpi-card .kpi-icon { position: absolute; top: var(--sp-lg); right: var(--sp-lg); width: 40px; height: 40px; border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .kpi-card .kpi-icon.red { background: var(--vy-red-tint); color: var(--vy-red); }
+  .kpi-card .kpi-icon.green { background: var(--win-bg); color: var(--win); }
+  .kpi-card .kpi-icon.amber { background: #FFFBEB; color: var(--amber); }
+
+  .kpi-card .kpi-lineage {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: var(--sp-sm);
+    font-size: 11px; color: var(--vy-red); cursor: pointer; font-weight: 500;
+    opacity: 0.7; transition: opacity 0.15s;
+  }
+  .kpi-card .kpi-lineage:hover { opacity: 1; }
+
+  /* ── Win/Loss Variant ── */
+  .kpi-card.win::before { background: var(--win); }
+  .kpi-card.loss::before { background: var(--loss); }
+
+  /* ── Rating Displays ── */
+  .stars { color: #DAA520; font-size: 16px; letter-spacing: 2px; margin-top: var(--sp-xs); }
+  .boxes { font-size: 16px; letter-spacing: 2px; margin-top: var(--sp-xs); }
+  .boxes .filled { color: var(--vy-red); }
+  .boxes .empty { color: #ddd; }
+
+  /* ── Content Cards ── */
+  .card {
+    background: var(--white); border-radius: var(--r-lg); padding: var(--sp-lg);
+    box-shadow: var(--shadow-card); border: 1px solid var(--border);
+    margin-bottom: var(--sp-lg);
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--sp-md); padding-bottom: var(--sp-md);
+    border-bottom: 1px solid var(--border);
+  }
+  .card-header h3 { font-size: 14px; font-weight: 600; color: var(--dark); }
+  .card-header .badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge-red { background: var(--vy-red-tint); color: var(--vy-red); }
+  .badge-green { background: var(--win-bg); color: var(--win); }
+
+  /* ── Grid Layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-lg); margin-bottom: var(--sp-lg); }
+  .grid-3-2 { display: grid; grid-template-columns: 2fr 2fr 3fr; gap: var(--sp-lg); margin-bottom: var(--sp-lg); }
+
+  /* ── Tables ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead th {
+    background: var(--vy-red); color: #fff; padding: 10px 14px;
+    text-align: left; font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .data-table thead th:first-child { border-radius: var(--r-sm) 0 0 0; }
+  .data-table thead th:last-child { border-radius: 0 var(--r-sm) 0 0; }
+  .data-table tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .data-table tbody tr:hover { background: var(--vy-red-tint); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+
+  /* Win/Loss row colors */
+  .data-table tbody tr.win td { background: var(--win-bg); }
+  .data-table tbody tr.loss td { background: var(--loss-bg); }
+  .data-table tbody tr.win:hover td { background: #D1FAE5; }
+  .data-table tbody tr.loss:hover td { background: #FEE2E2; }
+
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .data-table .currency::before { content: '$'; }
+  .data-table .text-win { color: var(--win); font-weight: 600; }
+  .data-table .text-loss { color: var(--loss); font-weight: 600; }
+
+  /* ── Table Row Inspector ── */
+  .row-inspector {
+    margin-top: var(--sp-md); padding: var(--sp-lg);
+    background: var(--light-gray); border-radius: var(--r-md);
+    border-left: 3px solid var(--vy-red);
+  }
+  .row-inspector h4 { font-size: 13px; font-weight: 600; color: var(--vy-red); margin-bottom: var(--sp-md); }
+  .calc-step {
+    padding: var(--sp-sm) var(--sp-md); margin: var(--sp-xs) 0;
+    background: var(--white); border-radius: var(--r-sm); font-size: 12px;
+    border-left: 3px solid var(--vy-red-light);
+  }
+  .calc-step .formula { font-family: 'SF Mono', Consolas, monospace; color: var(--vy-red-dark); font-weight: 500; }
+  .calc-step .desc { color: var(--medium-gray); margin-top: 2px; }
+  .calc-step .result { font-weight: 700; color: var(--dark); }
+
+  /* ── Chart Containers ── */
+  .chart-placeholder {
+    height: 280px; background: var(--light-gray); border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--medium-gray); font-size: 13px; border: 1px dashed var(--border);
+  }
+
+  /* ── Gauge Mock ── */
+  .gauge-container { text-align: center; padding: var(--sp-md); }
+  .gauge-ring {
+    width: 120px; height: 60px; margin: 0 auto var(--sp-sm);
+    border: 8px solid var(--border); border-bottom: none;
+    border-radius: 60px 60px 0 0; position: relative;
+  }
+  .gauge-ring::after {
+    content: ''; position: absolute; bottom: 0; left: 50%;
+    width: 8px; height: 60px; background: var(--vy-red);
+    transform-origin: bottom center; transform: rotate(-18deg);
+    border-radius: 4px;
+  }
+  .gauge-value { font-size: 28px; font-weight: 700; color: var(--dark); }
+  .gauge-label { font-size: 11px; color: var(--medium-gray); }
+
+  /* ── Donut Mock ── */
+  .donut-container { text-align: center; padding: var(--sp-md); }
+  .donut-ring {
+    width: 140px; height: 140px; border-radius: 50%; margin: 0 auto var(--sp-md);
+    background: conic-gradient(var(--win) 0% 72%, var(--loss) 72% 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .donut-ring .donut-hole {
+    width: 80px; height: 80px; border-radius: 50%; background: var(--white);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .donut-ring .donut-hole .label { font-size: 10px; color: var(--medium-gray); }
+  .donut-ring .donut-hole .val { font-size: 16px; font-weight: 700; }
+
+  /* ── Totals Bar ── */
+  .totals-bar {
+    display: flex; gap: var(--sp-xl); padding: var(--sp-md) var(--sp-lg);
+    background: var(--dark); color: #fff; border-radius: var(--r-md);
+    font-size: 13px; margin-top: var(--sp-md);
+  }
+  .totals-bar .t-item .t-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+  .totals-bar .t-item .t-val { font-weight: 700; font-size: 15px; }
+
+  /* ── Debug/Lineage Expander ── */
+  .expander {
+    margin-top: var(--sp-lg); border: 1px solid var(--border);
+    border-radius: var(--r-md); overflow: hidden;
+  }
+  .expander-header {
+    display: flex; align-items: center; gap: var(--sp-sm);
+    padding: var(--sp-md) var(--sp-lg); background: var(--light-gray);
+    font-size: 13px; font-weight: 500; color: var(--medium-gray); cursor: pointer;
+  }
+  .expander-header:hover { background: var(--vy-red-tint); color: var(--vy-red); }
+
+  /* ══════════════════════════════════════════════════════════════════
+     DESIGN SYSTEM DOCS
+     ══════════════════════════════════════════════════════════════════ */
+  .section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--vy-red); margin: var(--sp-2xl) 0 var(--sp-lg); padding-bottom: var(--sp-sm);
+    border-bottom: 2px solid var(--vy-red);
+  }
+
+  .swatch-row { display: flex; gap: var(--sp-md); flex-wrap: wrap; margin-bottom: var(--sp-lg); }
+  .swatch {
+    width: 100px; text-align: center;
+  }
+  .swatch .color-box { width: 100px; height: 60px; border-radius: var(--r-md); margin-bottom: var(--sp-xs); border: 1px solid var(--border); }
+  .swatch .color-name { font-size: 11px; font-weight: 600; }
+  .swatch .color-hex { font-size: 10px; color: var(--medium-gray); font-family: monospace; }
+
+  .type-sample { margin-bottom: var(--sp-md); }
+  .type-sample .spec { font-size: 11px; color: var(--medium-gray); font-family: monospace; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FULL DASHBOARD MOCKUP
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">🌳</div>
+      <div class="logo-text">
+        Van Yahres<br>Tree Company
+        <span>Operations Dashboard</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Crew Performance</div>
+      <a class="nav-item active"><span class="icon">📊</span> Crew Leader Stats</a>
+      <a class="nav-item"><span class="icon">📋</span> White Board</a>
+      <a class="nav-item"><span class="icon">📄</span> Stats Detail</a>
+      <a class="nav-item"><span class="icon">⚠️</span> Damage</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Operations</div>
+      <a class="nav-item"><span class="icon">⏱</span> Time Detail</a>
+      <a class="nav-item"><span class="icon">📈</span> Win/Loss Details</a>
+      <a class="nav-item"><span class="icon">📊</span> Win/Loss Summary</a>
+      <a class="nav-item"><span class="icon">⚖️</span> Est v Actual</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Management</div>
+      <a class="nav-item"><span class="icon">📝</span> Notes</a>
+      <a class="nav-item"><span class="icon">👤</span> Owner</a>
+    </div>
+  </nav>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <div class="breadcrumb">Crew Performance</div>
+        <h1>Crew Leader Stats</h1>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Crew Leader</label>
+        <select><option>All</option><option>Josh</option><option>Jonathan</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Operation</label>
+        <select><option>All</option><option>Trees</option><option>PHC</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Year</label>
+        <select><option>2025</option><option>2024</option><option>2023</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Month</label>
+        <select><option>All</option><option>Jan</option><option>Feb</option></select>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-icon red">⭐</div>
+        <div class="kpi-label">Compliments</div>
+        <div class="kpi-value">47</div>
+        <div class="stars">★★★★☆☆☆☆☆☆</div>
+        <div class="kpi-lineage">🔍 Lineage</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon amber">📞</div>
+        <div class="kpi-label">Call Backs</div>
+        <div class="kpi-value">3</div>
+        <div class="boxes"><span class="filled">■■■</span><span class="empty">■■■■■■■</span></div>
+        <div class="kpi-lineage">🔍 Lineage</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Average of Percent</div>
+        <div class="gauge-container">
+          <div class="gauge-ring"></div>
+          <div class="gauge-value">91.7%</div>
+          <div class="gauge-label">QC Score</div>
+        </div>
+        <div class="kpi-lineage">🔍 Lineage</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon green">📋</div>
+        <div class="kpi-label"># Grades</div>
+        <div class="kpi-value">89</div>
+        <div class="kpi-sub">Sales Reps: Tyler, Mike</div>
+        <div class="kpi-lineage">🔍 Lineage</div>
+      </div>
+    </div>
+
+    <!-- Detail Tables + Donut -->
+    <div class="grid-3-2">
+      <!-- Compliments Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Compliments</h3>
+          <span class="badge badge-green">47 Total</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Visit Ref</th><th>Qty</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>01/08/25</td><td>14201</td><td class="num">1</td><td>Great work on oak removal</td></tr>
+            <tr><td>01/16/25</td><td>14305</td><td class="num">1</td><td>Client very pleased</td></tr>
+            <tr><td>01/17/25</td><td>14312</td><td class="num">1</td><td>Excellent cleanup</td></tr>
+            <tr><td>01/27/25</td><td>14410</td><td class="num">1</td><td>Professional crew</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Call Backs Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Call Backs</h3>
+          <span class="badge badge-red">3 Total</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Visit Ref</th><th>Qty</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>02/10/25</td><td>14520</td><td class="num">1</td><td>Missed branch clearance</td></tr>
+            <tr><td>03/05/25</td><td>14680</td><td class="num">1</td><td>Debris left on site</td></tr>
+            <tr><td>04/12/25</td><td>14901</td><td class="num">1</td><td>Follow-up needed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Win/Loss Donut -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Win / Loss</h3>
+        </div>
+        <div class="donut-container">
+          <div class="donut-ring">
+            <div class="donut-hole">
+              <div class="label">Win Rate</div>
+              <div class="val">72%</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:24px;font-size:13px;">
+            <span><span style="color:var(--win);">●</span> Win: 186</span>
+            <span><span style="color:var(--loss);">●</span> Loss: 72</span>
+          </div>
+        </div>
+        <div class="kpi-lineage" style="text-align:center;">🔍 Lineage</div>
+      </div>
+    </div>
+
+    <!-- Row Inspector Example -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🔍 Lineage Inspector Example</h3>
+        <span class="badge badge-red">Click any row to inspect</span>
+      </div>
+      <div class="row-inspector">
+        <h4>🔍 Lineage — Visit Ref #: 14201</h4>
+        <div class="calc-step">
+          <div><strong>InvTotal</strong> = <span class="formula">sum(Line Total) where Billable = True</span></div>
+          <div class="desc">Total invoice amount for the visit</div>
+          <div>Result: <span class="result">$2,450.00</span></div>
+        </div>
+        <div class="calc-step">
+          <div><strong>HoursEst</strong> = <span class="formula">sum(Qty) where Item category = 'Labor'</span></div>
+          <div class="desc">Estimated hours from labor line items</div>
+          <div>Result: <span class="result">8.00</span> &nbsp; <span style="color:var(--medium-gray);font-size:11px;">Inputs: Qty = 8.0</span></div>
+        </div>
+        <div class="calc-step">
+          <div><strong>HrsRatio</strong> = <span class="formula">HoursEst / TimeByInv</span></div>
+          <div class="desc">Ratio of estimated to actual hours (&gt;1 = beat the estimate)</div>
+          <div>Result: <span class="result">1.14</span> &nbsp; <span style="color:var(--medium-gray);font-size:11px;">Inputs: HoursEst = 8.00, TimeByInv = 7.00</span></div>
+        </div>
+        <div class="calc-step">
+          <div><strong>WinLossText</strong> = <span class="formula">IF HrsRatio &gt;= 1.0 THEN 'Win' ELSE 'Loss'</span></div>
+          <div>Result: <span class="result text-win">Win</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Win/Loss Detail Table (Owner-style) -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Win / Loss for Period</h3>
+        <span class="badge badge-red">258 visits</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Visit Ref</th><th>Client</th><th>Operation</th>
+            <th class="num">InvTotal</th><th class="num">HrsEst</th><th class="num">HrsAct</th>
+            <th class="num">Ratio</th><th class="num">EPH</th><th>W/L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="win">
+            <td>01/08/25</td><td>14201</td><td>Smith Residence</td><td>Trees</td>
+            <td class="num">$2,450</td><td class="num">8.0</td><td class="num">7.0</td>
+            <td class="num">1.14</td><td class="num">$350</td><td class="text-win">Win</td>
+          </tr>
+          <tr class="loss">
+            <td>01/10/25</td><td>14215</td><td>Jones Property</td><td>PHC</td>
+            <td class="num">$890</td><td class="num">3.0</td><td class="num">4.5</td>
+            <td class="num">0.67</td><td class="num">$198</td><td class="text-loss">Loss</td>
+          </tr>
+          <tr class="win">
+            <td>01/12/25</td><td>14230</td><td>Oak Hill HOA</td><td>Trees</td>
+            <td class="num">$5,200</td><td class="num">16.0</td><td class="num">14.0</td>
+            <td class="num">1.14</td><td class="num">$371</td><td class="text-win">Win</td>
+          </tr>
+          <tr class="win">
+            <td>01/15/25</td><td>14248</td><td>Williams Estate</td><td>Trees</td>
+            <td class="num">$3,800</td><td class="num">12.0</td><td class="num">10.5</td>
+            <td class="num">1.14</td><td class="num">$362</td><td class="text-win">Win</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Totals Bar -->
+      <div class="totals-bar">
+        <div class="t-item"><div class="t-label">InvTotal</div><div class="t-val">$12,340</div></div>
+        <div class="t-item"><div class="t-label">Costs</div><div class="t-val">$2,100</div></div>
+        <div class="t-item"><div class="t-label">Net</div><div class="t-val">$10,240</div></div>
+        <div class="t-item"><div class="t-label">Hrs Est</div><div class="t-val">39.0</div></div>
+        <div class="t-item"><div class="t-label">Hrs Act</div><div class="t-val">36.0</div></div>
+        <div class="t-item"><div class="t-label">EPH</div><div class="t-val">$343</div></div>
+      </div>
+
+      <!-- Inspect row selector -->
+      <div style="margin-top:var(--sp-md);display:flex;align-items:center;gap:var(--sp-sm);">
+        <span style="font-size:13px;color:var(--medium-gray);">🔍 Inspect row:</span>
+        <select style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:inherit;">
+          <option>Select Visit Ref #</option>
+          <option>14201</option>
+          <option>14215</option>
+          <option>14230</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Debug Expander -->
+    <div class="expander">
+      <div class="expander-header">
+        🔍 Debug: Data Sources &amp; Transforms
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         DESIGN SYSTEM REFERENCE
+         ════════════════════════════════════════════════════════════ -->
+    <div class="section-title">Color Palette</div>
+    <div class="swatch-row">
+      <div class="swatch"><div class="color-box" style="background:#9B2335;"></div><div class="color-name">VY Red</div><div class="color-hex">#9B2335</div></div>
+      <div class="swatch"><div class="color-box" style="background:#7A1C2A;"></div><div class="color-name">Red Dark</div><div class="color-hex">#7A1C2A</div></div>
+      <div class="swatch"><div class="color-box" style="background:#C4384D;"></div><div class="color-name">Red Light</div><div class="color-hex">#C4384D</div></div>
+      <div class="swatch"><div class="color-box" style="background:#FDF2F3;border:1px solid #eee;"></div><div class="color-name">Red Tint</div><div class="color-hex">#FDF2F3</div></div>
+      <div class="swatch"><div class="color-box" style="background:#FBF7F4;border:1px solid #eee;"></div><div class="color-name">Cream</div><div class="color-hex">#FBF7F4</div></div>
+      <div class="swatch"><div class="color-box" style="background:#1E1E2E;"></div><div class="color-name">Dark</div><div class="color-hex">#1E1E2E</div></div>
+      <div class="swatch"><div class="color-box" style="background:#6B7280;"></div><div class="color-name">Med Gray</div><div class="color-hex">#6B7280</div></div>
+      <div class="swatch"><div class="color-box" style="background:#F3F4F6;border:1px solid #eee;"></div><div class="color-name">Light Gray</div><div class="color-hex">#F3F4F6</div></div>
+      <div class="swatch"><div class="color-box" style="background:#059669;"></div><div class="color-name">Win</div><div class="color-hex">#059669</div></div>
+      <div class="swatch"><div class="color-box" style="background:#DC2626;"></div><div class="color-name">Loss</div><div class="color-hex">#DC2626</div></div>
+      <div class="swatch"><div class="color-box" style="background:#D97706;"></div><div class="color-name">Amber</div><div class="color-hex">#D97706</div></div>
+    </div>
+
+    <div class="section-title">Typography</div>
+    <div class="type-sample">
+      <div class="spec">Inter 700 / 22px — Page Title</div>
+      <div style="font-size:22px;font-weight:700;">Crew Leader Stats</div>
+    </div>
+    <div class="type-sample">
+      <div class="spec">Inter 600 / 14px — Card Header</div>
+      <div style="font-size:14px;font-weight:600;">Win / Loss for Period</div>
+    </div>
+    <div class="type-sample">
+      <div class="spec">Inter 700 / 32px — KPI Value</div>
+      <div style="font-size:32px;font-weight:700;">$12,340</div>
+    </div>
+    <div class="type-sample">
+      <div class="spec">Inter 600 / 12px uppercase — KPI Label / Filter Label</div>
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--medium-gray);">Compliments</div>
+    </div>
+    <div class="type-sample">
+      <div class="spec">Inter 400 / 13px — Table Body</div>
+      <div style="font-size:13px;">Smith Residence — $2,450.00 — Trees — 8.0 hrs</div>
+    </div>
+
+    <div class="section-title">Component Specs</div>
+    <div style="font-size:13px;line-height:1.8;color:var(--medium-gray);">
+      <strong style="color:var(--dark);">Cards:</strong> 16px padding · 16px radius · 1px #E5E7EB border · subtle shadow<br>
+      <strong style="color:var(--dark);">KPI Cards:</strong> 3px red top accent bar · 40px icon badge top-right<br>
+      <strong style="color:var(--dark);">Tables:</strong> Red header row · 10px 14px cell padding · hover = red tint bg<br>
+      <strong style="color:var(--dark);">Win/Loss rows:</strong> Green (#ECFDF5) for Win · Red (#FEF2F2) for Loss<br>
+      <strong style="color:var(--dark);">Filters:</strong> White card container · labels uppercase 11px · inputs gray bg<br>
+      <strong style="color:var(--dark);">Sidebar:</strong> Dark (#1E1E2E) bg · active item = VY Red bg · grouped navigation<br>
+      <strong style="color:var(--dark);">Lineage:</strong> Red left-border cards · monospace formulas · collapsible tabs<br>
+      <strong style="color:var(--dark);">Totals bar:</strong> Dark bg · white text · compact layout below tables
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

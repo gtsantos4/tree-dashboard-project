@@ -106,20 +106,21 @@ COLUMN_LINEAGE = {
         "transform": "build_stats",
         "filter": "Item Name in ['Quality Control', 'Compliment', 'Call Back', 'Crew Feedback']",
     },
-    "Percent": {
-        "formula": "Qty value for Quality Control items (stored as 0-1 decimal)",
-        "description": "QC percentage score",
-        "source_columns": ["Qty"],
+    "QC Grade": {
+        "formula": "Extract leading letter grade (A+ through F) from Line_Item_Description",
+        "description": "Letter grade parsed from the QC description text (e.g. 'A Everything looks great!' → 'A')",
+        "source_columns": ["Line_Item_Description"],
         "source_table": "SO_LineItems → Stats",
         "transform": "build_stats",
-        "special_cases": "Only populated for Item Name = 'Quality Control'; NaN for others",
+        "special_cases": "Only populated for Item Name = 'Quality Control'; falls back to 'Grade: X' pattern",
     },
-    "QC Grade": {
-        "formula": "Lookup Percent against QC scale in CrewStatLists.xlsx → QC sheet",
-        "description": "Letter grade (A+ through F) based on QC percentage",
-        "source_columns": ["Percent"],
+    "Percent": {
+        "formula": "QC Grade → lookup against CrewStatLists.xlsx QC sheet (A=0.95, A-=0.92, B=0.85, …)",
+        "description": "QC percentage score derived from the letter grade in Line_Item_Description",
+        "source_columns": ["QC Grade"],
         "source_table": "Stats + CrewStatLists.xlsx (QC sheet)",
         "transform": "build_stats",
+        "special_cases": "Only populated for Item Name = 'Quality Control'; NaN for others",
     },
 }
 
@@ -185,7 +186,7 @@ KPI_LINEAGE = {
     },
     "Average of Percent (Gauge)": {
         "formula": "avg(Percent) where Item Name = 'Quality Control'  x  100",
-        "description": "Average QC score as a percentage. Each QC line item stores a decimal (0-1) in the Qty field; this averages them and scales to 0-100 for the gauge.",
+        "description": "Average QC score as a percentage. The letter grade is extracted from Line_Item_Description, mapped to a decimal via the QC scale (A=0.95, B=0.85, etc.), then averaged and scaled to 0-100.",
         "source_table": "Stats (from SO_LineItems via build_stats, filtered to Quality Control)",
         "filters_applied": "Year, Month, Crew Leader",
     },

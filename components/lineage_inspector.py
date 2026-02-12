@@ -7,6 +7,9 @@ inspectable_dataframe   — table with on_select row inspection
 inspectable_winloss     — styled Win/Loss table + dropdown inspector
 inspectable_metric      — metric card with lineage popover
 inspectable_chart       — Plotly chart with lineage popover
+
+When config.DEV_MODE is False, these render the plain component
+with no lineage UI (safe for client-facing deployment).
 """
 from __future__ import annotations
 
@@ -14,8 +17,9 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
-from data.lineage import COLUMN_LINEAGE, KPI_LINEAGE
+from reports.stats.data.lineage import COLUMN_LINEAGE, KPI_LINEAGE
 from components.kpi_cards import metric_card
+from config import DEV_MODE, VY_RED
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -33,21 +37,14 @@ def inspectable_dataframe(
     height: int = 500,
 ):
     """
-    Render a table with single-row selection.
-    Click a row to open an inspector panel showing source data
-    and calculation lineage.
-
-    Parameters
-    ----------
-    df          Underlying data (used for lookups & calculations).
-    display_df  Formatted copy shown to the user (optional).
-    source_so   Cleaned SO_LineItems for source-row drill-down.
-    source_time Raw Time.csv for time-entry drill-down.
-    ref_col     Column name used as the row key.
-    key         Unique Streamlit widget key.
-    height      Table pixel height.
+    Render a table with single-row selection (dev mode only).
+    In client mode, renders a plain dataframe.
     """
     render = display_df if display_df is not None else df
+
+    if not DEV_MODE:
+        st.dataframe(render, use_container_width=True, hide_index=True, height=height)
+        return
 
     event = st.dataframe(
         render,
@@ -83,11 +80,8 @@ def inspectable_winloss(
     height: int = 500,
 ):
     """
-    Win/Loss-colored table with a dropdown row inspector.
-
-    Styled DataFrames don't support on_select, so this renders
-    the colored table normally and adds a selectbox below
-    for picking a row to inspect.
+    Win/Loss-colored table with a dropdown row inspector (dev mode).
+    In client mode, renders the styled table without inspector.
     """
     from components.styled_table import _wl_row_color
 
@@ -100,6 +94,9 @@ def inspectable_winloss(
         .format(precision=2, na_rep="")
     )
     st.dataframe(styled, use_container_width=True, height=height)
+
+    if not DEV_MODE:
+        return
 
     # Dropdown inspector
     if ref_col in df.columns:
@@ -131,9 +128,14 @@ def inspectable_metric(
     suffix: str = "",
 ):
     """
-    Metric card with a popover that shows KPI lineage.
+    Metric card with a popover that shows KPI lineage (dev mode).
+    In client mode, renders just the metric card.
     """
     metric_card(label, value, prefix=prefix, suffix=suffix)
+
+    if not DEV_MODE:
+        return
+
     with st.popover("🔍 Lineage"):
         _kpi_inspector(kpi_name, source_df, filters or {})
 
@@ -151,17 +153,14 @@ def inspectable_chart(
     key: str = "ichart",
 ):
     """
-    Render a Plotly chart with a lineage popover underneath.
-
-    Parameters
-    ----------
-    fig         A plotly Figure object.
-    kpi_name    Key into KPI_LINEAGE for the formula / description.
-    source_df   The data that feeds the chart.
-    filters     Currently active filter values.
-    key         Unique Streamlit widget key.
+    Render a Plotly chart with a lineage popover underneath (dev mode).
+    In client mode, renders just the chart.
     """
     st.plotly_chart(fig, use_container_width=True, key=f"{key}_fig")
+
+    if not DEV_MODE:
+        return
+
     with st.popover("🔍 Lineage"):
         _kpi_inspector(kpi_name, source_df, filters or {})
 
@@ -229,13 +228,13 @@ def _show_calculations(row: pd.Series):
         sc = info.get("special_cases", "")
         if sc and _special_case_active(row, sc):
             warn_html = (
-                '<br/><span style="color:#c62828;font-size:12px;">'
+                '<br/><span style="color:#DC2626;font-size:12px;">'
                 f'⚠ {sc}</span>'
             )
 
         st.markdown(
-            '<div style="padding:8px 12px;margin:4px 0;background:#f8f9fa;'
-            'border-left:3px solid #4472C4;border-radius:4px;">'
+            f'<div style="padding:8px 12px;margin:4px 0;background:#F9FAFB;'
+            f'border-left:3px solid {VY_RED};border-radius:4px;">'
             f'<strong>{col}</strong> = <code>{info["formula"]}</code><br/>'
             f'<span style="color:#555;">{info["description"]}</span><br/>'
             f'Result: <strong>{display_val}</strong>'

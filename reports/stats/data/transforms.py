@@ -120,29 +120,40 @@ def build_stats(so: pd.DataFrame, qc_df: pd.DataFrame) -> pd.DataFrame:
     """Filter SO_LineItems to stat-tracking items and add QC grade info."""
     df = so[so["Item Name"].isin(STAT_ITEMS)].copy()
 
-    # For Quality Control items, map Qty → QC percentage
-    # The QC lookup: Grade → Percent  (A+ = 1.0, A = 0.95, …)
-    # In the data, Qty on QC items IS the percentage (0-1 range already stored as decimal)
-    # We'll store Percent from the Qty for QC items, and 1.0 for others
-    df["Percent"] = np.where(
-        df["Item Name"] == "Quality Control",
-        df["Qty"],
-        np.nan,
-    )
+    # For Quality Control items the letter grade is embedded at the start
+    # of Line_Item_Description (e.g. "A Everything looks great!" or
+    # "B+ All items completed.").  Some rows use "Grade: A" format instead.
+    # We extract the grade, then look up the numeric percent from the QC scale.
+    df["QC Grade"] = ""
+    df["Percent"] = np.nan
 
-    # Map percent → letter grade via the QC scale
     if not qc_df.empty:
-        grade_map = qc_df.sort_values("Percent", ascending=False)
-        def _to_grade(pct):
-            if pd.isna(pct):
+        grade_pct = dict(zip(qc_df["Grade"].str.strip(), qc_df["Percent"]))
+
+        def _extract_grade(desc):
+            """Pull the letter grade (A+ through F) from a QC description."""
+            if not isinstance(desc, str) or not desc.strip():
                 return ""
-            for _, row in grade_map.iterrows():
-                if pct >= row["Percent"]:
-                    return row["Grade"]
-            return grade_map.iloc[-1]["Grade"]  # lowest grade
-        df["QC Grade"] = df["Percent"].apply(_to_grade)
-    else:
-        df["QC Grade"] = ""
+            desc = desc.strip()
+            # Try "Grade: X" or "Grade X" or "Quality: X" pattern first
+            m = re.search(r"(?:Grade|Quality)[:\s]+([A-Fa-f][+-]?)", desc, re.IGNORECASE)
+            if m:
+                return m.group(1).strip().upper()
+            # Try leading grade at start of string
+            m = re.match(r"^([A-Fa-f][+-]?)\b", desc)
+            if m:
+                return m.group(1).strip().upper()
+            return ""
+
+        is_qc = df["Item Name"] == "Quality Control"
+        df.loc[is_qc, "QC Grade"] = (
+            df.loc[is_qc, "Line_Item_Description"]
+            .apply(_extract_grade)
+        )
+        df.loc[is_qc, "Percent"] = (
+            df.loc[is_qc, "QC Grade"]
+            .map(grade_pct)
+        )
 
     return df
 

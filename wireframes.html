@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Wireframes — Van Yahres Tree Company</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --vy-red: #9B2335;
+    --vy-red-dark: #7A1C2A;
+    --vy-red-tint: #FDF2F3;
+    --dark: #1E1E2E;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --win: #059669;
+    --win-bg: #ECFDF5;
+    --win-light: #D1FAE5;
+    --loss: #DC2626;
+    --loss-bg: #FEF2F2;
+    --amber: #D97706;
+    --blue: #2563EB;
+    --white: #FFFFFF;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--gray-900); }
+
+  /* Navigation */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--dark); padding: 0 32px;
+    display: flex; align-items: center; gap: 4px;
+    border-bottom: 2px solid var(--vy-red);
+    overflow-x: auto;
+  }
+  .nav-title { color: white; font-weight: 700; font-size: 15px; padding: 16px 16px 16px 0;
+    border-right: 1px solid rgba(255,255,255,0.15); margin-right: 12px; white-space: nowrap; }
+  .nav a {
+    color: rgba(255,255,255,0.6); text-decoration: none; font-size: 13px; font-weight: 500;
+    padding: 14px 14px; white-space: nowrap; border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav a:hover { color: white; }
+  .nav a.active { color: white; border-bottom-color: var(--vy-red); }
+
+  /* Page container */
+  .page { display: none; padding: 32px; max-width: 1400px; margin: 0 auto; }
+  .page.active { display: block; }
+  .page-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+  }
+  .page-header h1 { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+  .page-header .subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  /* Filter bar */
+  .filter-bar {
+    background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 24px; box-shadow: var(--shadow-card);
+    display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;
+  }
+  .filter-group { flex: 1; min-width: 140px; }
+  .filter-group label {
+    display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--gray-500); margin-bottom: 6px;
+  }
+  .filter-group select, .filter-group input {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 8px;
+    font-size: 13px; font-family: inherit; background: var(--gray-50);
+  }
+
+  /* KPI Cards */
+  .kpi-row { display: grid; gap: 16px; margin-bottom: 24px; }
+  .kpi-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-row.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .kpi-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .kpi-card {
+    background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius);
+    border-top: 3px solid var(--vy-red); padding: 20px; box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .kpi-card .kpi-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--gray-500); margin-bottom: 8px;
+  }
+  .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: var(--gray-900); }
+  .kpi-card .kpi-delta { font-size: 12px; margin-top: 4px; font-weight: 500; }
+  .kpi-card .kpi-delta.up { color: var(--win); }
+  .kpi-card .kpi-delta.down { color: var(--loss); }
+  .kpi-card .kpi-icon {
+    position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .kpi-card.win-accent { border-top-color: var(--win); }
+  .kpi-card.loss-accent { border-top-color: var(--loss); }
+  .kpi-card.amber-accent { border-top-color: var(--amber); }
+
+  /* Content cards */
+  .card {
+    background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius);
+    box-shadow: var(--shadow-card); overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 20px; border-bottom: 1px solid var(--gray-200);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .card-header h3 { font-size: 14px; font-weight: 600; color: var(--gray-700); }
+  .card-body { padding: 0; }
+  .card-body.padded { padding: 20px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: var(--vy-red); color: white; font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    padding: 10px 14px; text-align: left; position: sticky; top: 0;
+  }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--gray-200); }
+  tbody tr:hover { background: var(--gray-50); }
+  tbody tr.win-row { background: var(--win-bg); }
+  tbody tr.win-row:hover { background: var(--win-light); }
+  tbody tr.loss-row { background: var(--loss-bg); }
+  tbody tr.loss-row:hover { background: #FEE2E2; }
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  .totals-row { background: var(--dark); color: white; font-weight: 600; }
+  .totals-row td { padding: 10px 14px; border: none; }
+
+  /* Layout grids */
+  .grid { display: grid; gap: 24px; margin-bottom: 24px; }
+  .grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid.cols-7-5 { grid-template-columns: 7fr 5fr; }
+  .grid.cols-5-7 { grid-template-columns: 5fr 7fr; }
+  .grid.cols-8-4 { grid-template-columns: 8fr 4fr; }
+  .grid.cols-4-8 { grid-template-columns: 4fr 8fr; }
+  .grid.cols-3-9 { grid-template-columns: 3fr 9fr; }
+  .grid.cols-4-4-4 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* Charts placeholders */
+  .chart-area {
+    padding: 20px; display: flex; align-items: center; justify-content: center;
+    min-height: 260px; position: relative;
+  }
+  .chart-placeholder { text-align: center; color: var(--gray-400); }
+  .chart-placeholder .icon { font-size: 40px; margin-bottom: 8px; }
+  .chart-placeholder .label { font-size: 12px; font-weight: 500; }
+
+  /* Mini chart bars */
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 180px; padding: 0 10px; }
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .bar { border-radius: 4px 4px 0 0; min-width: 20px; transition: height 0.3s; }
+  .bar.win { background: var(--win); }
+  .bar.loss { background: var(--loss); }
+  .bar.est { background: var(--blue); opacity: 0.7; }
+  .bar.actual { background: var(--win); }
+  .bar-label { font-size: 10px; color: var(--gray-500); margin-top: 4px; }
+
+  /* Donut placeholder */
+  .donut-wrapper { display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .donut { width: 180px; height: 180px; border-radius: 50%; position: relative;
+    background: conic-gradient(var(--win) 0% 62%, var(--loss) 62% 100%);
+  }
+  .donut-hole {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 100px; height: 100px; background: white; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .donut-hole .big { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+  .donut-hole .small { font-size: 11px; color: var(--gray-500); }
+
+  /* Gauge */
+  .gauge-wrapper { text-align: center; padding: 20px; }
+  .gauge-arc {
+    width: 160px; height: 80px; margin: 0 auto;
+    border-radius: 160px 160px 0 0;
+    background: conic-gradient(from 0.75turn, var(--loss) 0%, var(--amber) 20%, var(--win) 45%, var(--gray-200) 45%);
+    position: relative; overflow: hidden;
+  }
+  .gauge-mask {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 60px; background: white; border-radius: 120px 120px 0 0;
+  }
+  .gauge-value { font-size: 24px; font-weight: 700; margin-top: 8px; color: var(--gray-900); }
+  .gauge-label { font-size: 11px; color: var(--gray-500); }
+
+  /* Star & box ratings */
+  .rating { margin-top: 8px; }
+  .stars { color: #DAA520; font-size: 16px; letter-spacing: 2px; }
+  .boxes { font-size: 16px; letter-spacing: 2px; }
+  .boxes .filled { color: var(--vy-red); }
+  .boxes .empty { color: #ddd; }
+
+  /* Badges / pills */
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge.win { background: var(--win-bg); color: var(--win); }
+  .badge.loss { background: var(--loss-bg); color: var(--loss); }
+
+  /* Section headers */
+  .section-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px; margin-top: 8px;
+  }
+  .section-header h2 { font-size: 16px; font-weight: 600; color: var(--gray-700); }
+  .section-header .line { flex: 1; height: 1px; background: var(--gray-200); }
+
+  /* Design notes */
+  .design-note {
+    background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #92400E;
+    line-height: 1.6;
+  }
+  .design-note strong { color: #78350F; }
+  .design-note::before { content: "💡 "; }
+
+  /* Crew breakdown cards */
+  .crew-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .crew-item {
+    padding: 12px; border-radius: 8px; border: 1px solid var(--gray-200);
+    background: var(--gray-50);
+  }
+  .crew-item .name { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+  .crew-item .value { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-top: 2px; }
+  .crew-item .sub { font-size: 11px; color: var(--gray-500); }
+
+  /* Scrollable table container */
+  .table-scroll { max-height: 400px; overflow-y: auto; }
+  .table-scroll-tall { max-height: 500px; overflow-y: auto; }
+
+  /* Totals bar */
+  .totals-bar {
+    background: var(--dark); color: white; padding: 12px 20px;
+    display: flex; gap: 32px; font-size: 13px;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .totals-bar .item { display: flex; flex-direction: column; }
+  .totals-bar .item .t-label { font-size: 10px; text-transform: uppercase; opacity: 0.6; letter-spacing: 0.5px; }
+  .totals-bar .item .t-value { font-weight: 700; font-size: 15px; }
+
+  /* Intro page */
+  .intro { padding: 60px 32px; max-width: 900px; margin: 0 auto; }
+  .intro h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .intro .sub { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; line-height: 1.6; }
+  .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .principle {
+    padding: 20px; background: white; border: 1px solid var(--gray-200);
+    border-radius: var(--radius); box-shadow: var(--shadow-card);
+  }
+  .principle .p-icon { font-size: 24px; margin-bottom: 8px; }
+  .principle h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .principle p { font-size: 13px; color: var(--gray-500); line-height: 1.5; }
+
+  /* Tab style for in-page sections */
+  .tab-row { display: flex; gap: 0; margin-bottom: -1px; position: relative; z-index: 1; }
+  .tab {
+    padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--gray-500);
+    border: 1px solid transparent; border-radius: 8px 8px 0 0; cursor: pointer;
+    background: transparent;
+  }
+  .tab.active { background: white; border-color: var(--gray-200); border-bottom-color: white; color: var(--gray-900); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">🌳 Van Yahres</div>
+  <a href="#" class="active" onclick="showPage('overview')">Overview</a>
+  <a href="#" onclick="showPage('p1')">1. Crew Leader</a>
+  <a href="#" onclick="showPage('p2')">2. White Board</a>
+  <a href="#" onclick="showPage('p3')">3. Stats Detail</a>
+  <a href="#" onclick="showPage('p4')">4. Damage</a>
+  <a href="#" onclick="showPage('p5')">5. Time Detail</a>
+  <a href="#" onclick="showPage('p6')">6. WinLoss Detail</a>
+  <a href="#" onclick="showPage('p7')">7. WinLoss Summary</a>
+  <a href="#" onclick="showPage('p8')">8. Est v Actual</a>
+  <a href="#" onclick="showPage('p9')">9. Notes</a>
+  <a href="#" onclick="showPage('p10')">10. Owner</a>
+</nav>
+
+<!-- ===================== OVERVIEW ===================== -->
+<div class="page active" id="overview">
+<div class="intro">
+  <h1>Dashboard Redesign Wireframes</h1>
+  <p class="sub">These wireframes show the proposed layout for each page of the Van Yahres dashboard. Click the page tabs above to view each wireframe. Yellow boxes contain design rationale.</p>
+
+  <div class="principles">
+    <div class="principle">
+      <div class="p-icon">📊</div>
+      <h3>KPIs First</h3>
+      <p>Every page leads with a summary KPI row so the client sees the headline numbers before the detail. Current pages bury KPIs or skip them entirely.</p>
+    </div>
+    <div class="principle">
+      <div class="p-icon">📐</div>
+      <h3>Consistent Grid</h3>
+      <p>All pages share the same filter bar, card, and table patterns. Currently each page has its own ad-hoc layout with different spacing and sizing.</p>
+    </div>
+    <div class="principle">
+      <div class="p-icon">🎯</div>
+      <h3>Charts That Earn Their Space</h3>
+      <p>Replace plain data dumps with visual summaries. Add trend sparklines, progress bars, and comparison charts where raw tables don't tell the story well.</p>
+    </div>
+    <div class="principle">
+      <div class="p-icon">🧹</div>
+      <h3>Breathing Room</h3>
+      <p>Current pages are cramped with no visual hierarchy. The redesign uses card containers, consistent padding, section dividers, and a dark totals bar at the bottom of key tables.</p>
+    </div>
+  </div>
+
+  <div class="design-note">
+    <strong>Key changes across all pages:</strong> (1) Unified filter bar in a white card at top. (2) KPI cards with red accent bars in a grid. (3) Tables inside card containers with sticky headers and a dark totals bar. (4) Charts sized properly and paired with supporting data. (5) Win/Loss badges instead of plain text. (6) Crew Leader breakdown cards instead of raw tables where it makes sense.
+  </div>
+</div>
+</div>
+
+<!-- ===================== PAGE 1: CREW LEADER STATS ===================== -->
+<div class="page" id="p1">
+  <div class="page-header">
+    <div><h1>Crew Leader Stats</h1><div class="subtitle">Performance overview by crew leader</div></div>
+  </div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) Filter bar consolidated into a clean card instead of 4 bare columns. (2) KPI row expanded to 5 cards — added Win Rate % as a new headline metric since it's the most important performance indicator. (3) Gauge moved from its own column into a KPI card with the value displayed large and a small arc below. (4) Bottom section reorganized: Compliments and Callbacks in a 2-column card layout with the donut chart given its own card. (5) Star/box ratings replaced with progress bars that are more visually scannable.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Crew Leader</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-5">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#ECFDF5;">⭐</div>
+      <div class="kpi-label">Compliments</div>
+      <div class="kpi-value">42</div>
+      <div class="rating"><span class="stars">★★★★☆☆☆☆☆☆</span></div>
+    </div>
+    <div class="kpi-card loss-accent">
+      <div class="kpi-icon" style="background:#FEF2F2;">📞</div>
+      <div class="kpi-label">Call Backs</div>
+      <div class="kpi-value">7</div>
+      <div class="rating"><span class="boxes"><span class="filled">■■■■■■■</span><span class="empty">■■■</span></span></div>
+    </div>
+    <div class="kpi-card win-accent">
+      <div class="kpi-icon" style="background:#ECFDF5;">📊</div>
+      <div class="kpi-label">Avg QC Grade</div>
+      <div class="kpi-value">91%</div>
+      <div style="height:6px;background:#E5E7EB;border-radius:3px;margin-top:8px;">
+        <div style="width:91%;height:100%;background:var(--win);border-radius:3px;"></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#EFF6FF;">📝</div>
+      <div class="kpi-label"># of Grades</div>
+      <div class="kpi-value">326</div>
+    </div>
+    <div class="kpi-card win-accent">
+      <div class="kpi-icon" style="background:#ECFDF5;">🏆</div>
+      <div class="kpi-label">Win Rate</div>
+      <div class="kpi-value">62%</div>
+      <div class="kpi-delta up">↑ 154 Wins / 95 Losses</div>
+    </div>
+  </div>
+
+  <div class="grid cols-7-5">
+    <div>
+      <div class="grid cols-2" style="margin-bottom:0;">
+        <div class="card">
+          <div class="card-header"><h3>Compliments</h3></div>
+          <div class="card-body">
+            <div class="table-scroll" style="max-height:280px;">
+            <table>
+              <thead><tr><th>Date</th><th>Ref #</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>01/15/2025</td><td>14201</td><td>Great work on oak removal</td></tr>
+                <tr><td>01/22/2025</td><td>14305</td><td>Very professional crew</td></tr>
+                <tr><td>02/03/2025</td><td>14412</td><td>Excellent cleanup</td></tr>
+                <tr><td>02/10/2025</td><td>14520</td><td>Client very happy</td></tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="totals-bar"><div class="item"><span class="t-label">Total</span><span class="t-value">42</span></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Call Backs</h3></div>
+          <div class="card-body">
+            <div class="table-scroll" style="max-height:280px;">
+            <table>
+              <thead><tr><th>Date</th><th>Ref #</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>01/18/2025</td><td>14250</td><td>Missed debris near fence</td></tr>
+                <tr><td>02/14/2025</td><td>14580</td><td>Client wants re-trim</td></tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="totals-bar"><div class="item"><span class="t-label">Total</span><span class="t-value">7</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Win / Loss Breakdown</h3></div>
+      <div class="card-body" style="display:flex; flex-direction:column; align-items:center; padding:20px;">
+        <div class="donut">
+          <div class="donut-hole">
+            <span class="big">62%</span>
+            <span class="small">Win Rate</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:24px; margin-top:16px; font-size:13px;">
+          <span style="color:var(--win); font-weight:600;">● 154 Wins</span>
+          <span style="color:var(--loss); font-weight:600;">● 95 Losses</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 2: WHITE BOARD ===================== -->
+<div class="page" id="p2">
+  <div class="page-header">
+    <div><h1>White Board</h1><div class="subtitle">Monthly performance matrix</div></div>
+  </div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) Added a KPI summary row at top — the current page has zero KPIs, making it hard to get a quick read. (2) Stats-by-month and QC-by-month tables combined into a tabbed card so only one is visible at a time (reduces clutter). (3) Win/Loss pivot table and bar chart placed side by side in a proper card container. (4) Reference scales moved into a collapsible "Reference Tables" section instead of taking up a full row — most users don't need to see these every time. (5) Bar chart given more height and breathing room.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-4">
+    <div class="kpi-card">
+      <div class="kpi-label">Total QC Grades</div>
+      <div class="kpi-value">326</div>
+    </div>
+    <div class="kpi-card win-accent">
+      <div class="kpi-label">Avg QC Score</div>
+      <div class="kpi-value">91.2%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Compliments</div>
+      <div class="kpi-value">42</div>
+    </div>
+    <div class="kpi-card loss-accent">
+      <div class="kpi-label">Call Backs</div>
+      <div class="kpi-value">7</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-header">
+      <div class="tab-row" style="margin:0;">
+        <div class="tab active">Stats by Month</div>
+        <div class="tab">QC % by Month</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Item</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Quality Control</td><td class="text-right">28</td><td class="text-right">31</td><td class="text-right">26</td><td class="text-right">30</td><td class="text-right">33</td><td class="text-right">29</td><td class="text-right">35</td><td class="text-right">27</td><td class="text-right">30</td><td class="text-right">22</td><td class="text-right">18</td><td class="text-right">17</td><td class="text-right" style="font-weight:700;">326</td></tr>
+          <tr><td>Compliment</td><td class="text-right">4</td><td class="text-right">5</td><td class="text-right">3</td><td class="text-right">4</td><td class="text-right">5</td><td class="text-right">3</td><td class="text-right">4</td><td class="text-right">3</td><td class="text-right">4</td><td class="text-right">3</td><td class="text-right">2</td><td class="text-right">2</td><td class="text-right" style="font-weight:700;">42</td></tr>
+          <tr><td>Call Back</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">1</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">1</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">0</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">1</td><td class="text-right" style="font-weight:700;">7</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-header"><h2>Win / Loss by Month</h2><div class="line"></div></div>
+
+  <div class="grid cols-5-7">
+    <div class="card">
+      <div class="card-header"><h3>Win/Loss Pivot</h3></div>
+      <div class="card-body">
+        <table>
+          <thead><tr><th>Operation</th><th>W/L</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr class="win-row"><td>Trees</td><td><span class="badge win">Win</span></td><td class="text-right">12</td><td class="text-right">14</td><td class="text-right">11</td><td class="text-right" style="font-weight:600;">37</td></tr>
+            <tr class="loss-row"><td>Trees</td><td><span class="badge loss">Loss</span></td><td class="text-right">8</td><td class="text-right">6</td><td class="text-right">9</td><td class="text-right" style="font-weight:600;">23</td></tr>
+            <tr class="win-row"><td>PHC</td><td><span class="badge win">Win</span></td><td class="text-right">5</td><td class="text-right">7</td><td class="text-right">6</td><td class="text-right" style="font-weight:600;">18</td></tr>
+            <tr class="loss-row"><td>PHC</td><td><span class="badge loss">Loss</span></td><td class="text-right">3</td><td class="text-right">2</td><td class="text-right">4</td><td class="text-right" style="font-weight:600;">9</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Win/Loss Trend</h3></div>
+      <div class="card-body chart-area">
+        <div class="bar-chart" style="width:100%;align-items:flex-end;">
+          <div class="bar-group"><div class="bar win" style="height:80px;width:100%;"></div><div class="bar loss" style="height:50px;width:100%;"></div><span class="bar-label">Jan</span></div>
+          <div class="bar-group"><div class="bar win" style="height:100px;width:100%;"></div><div class="bar loss" style="height:40px;width:100%;"></div><span class="bar-label">Feb</span></div>
+          <div class="bar-group"><div class="bar win" style="height:85px;width:100%;"></div><div class="bar loss" style="height:60px;width:100%;"></div><span class="bar-label">Mar</span></div>
+          <div class="bar-group"><div class="bar win" style="height:90px;width:100%;"></div><div class="bar loss" style="height:35px;width:100%;"></div><span class="bar-label">Apr</span></div>
+          <div class="bar-group"><div class="bar win" style="height:110px;width:100%;"></div><div class="bar loss" style="height:45px;width:100%;"></div><span class="bar-label">May</span></div>
+          <div class="bar-group"><div class="bar win" style="height:75px;width:100%;"></div><div class="bar loss" style="height:55px;width:100%;"></div><span class="bar-label">Jun</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 3: STATS DETAIL ===================== -->
+<div class="page" id="p3">
+  <div class="page-header"><div><h1>Stats Detail</h1><div class="subtitle">All stat line items with full detail</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) Added a KPI summary row — current page is just a giant table with no context. The 4 KPIs give instant breakdown by stat type. (2) Table wrapped in a proper card container with sticky headers and a totals bar. (3) Added Item Name as a colored badge in the table instead of plain text, making it scannable at a glance. (4) Reduced table height slightly but added the totals bar at bottom for persistent context.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Crew Leader</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+    <div class="filter-group"><label>Item Type</label><select><option>All</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-4">
+    <div class="kpi-card"><div class="kpi-label">Quality Control</div><div class="kpi-value">326</div></div>
+    <div class="kpi-card"><div class="kpi-label">Compliments</div><div class="kpi-value">42</div></div>
+    <div class="kpi-card"><div class="kpi-label">Call Backs</div><div class="kpi-value">7</div></div>
+    <div class="kpi-card"><div class="kpi-label">Crew Feedback</div><div class="kpi-value">18</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>All Stats Line Items</h3></div>
+    <div class="card-body">
+      <div class="table-scroll-tall">
+      <table>
+        <thead><tr><th>Date</th><th>Ref #</th><th>Job #</th><th>Client</th><th>Crew Leader</th><th>Type</th><th>Qty</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>01/15/2025</td><td>14201</td><td>J-4501</td><td>Smith Residence</td><td>Josh R</td><td><span class="badge win">QC</span></td><td class="text-right">1</td><td>A Grade — Excellent pruning work</td></tr>
+          <tr><td>01/15/2025</td><td>14201</td><td>J-4501</td><td>Smith Residence</td><td>Josh R</td><td><span class="badge" style="background:#EFF6FF;color:#2563EB;">Compliment</span></td><td class="text-right">1</td><td>Very professional, great cleanup</td></tr>
+          <tr><td>01/18/2025</td><td>14250</td><td>J-4520</td><td>Oak Manor HOA</td><td>Jonathan M</td><td><span class="badge loss">Callback</span></td><td class="text-right">1</td><td>Missed debris near back fence</td></tr>
+          <tr><td>01/22/2025</td><td>14305</td><td>J-4545</td><td>Pine Valley CC</td><td>Josh R</td><td><span class="badge win">QC</span></td><td class="text-right">1</td><td>B+ Grade — Good overall</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="totals-bar">
+        <div class="item"><span class="t-label">Total Items</span><span class="t-value">393</span></div>
+        <div class="item"><span class="t-label">QC</span><span class="t-value">326</span></div>
+        <div class="item"><span class="t-label">Compliments</span><span class="t-value">42</span></div>
+        <div class="item"><span class="t-label">Call Backs</span><span class="t-value">7</span></div>
+        <div class="item"><span class="t-label">Feedback</span><span class="t-value">18</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 4: DAMAGE ===================== -->
+<div class="page" id="p4">
+  <div class="page-header"><div><h1>Damage</h1><div class="subtitle">Damage repair incidents and costs</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) Added cost-focused KPIs — current page only shows a count. The client needs to see total cost, average cost, and which crew leader has the most incidents at a glance. (2) Crew Leader breakdown redesigned as a grid of mini-cards instead of HTML boxes with inconsistent styling. (3) Table now includes the totals bar for persistent cost visibility. (4) Added a "Cost by Crew Leader" section with a horizontal bar chart for visual impact.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2024, 2025</option></select></div>
+    <div class="filter-group"><label>Crew Leader</label><select><option>All</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-3">
+    <div class="kpi-card loss-accent">
+      <div class="kpi-icon" style="background:#FEF2F2;">⚠️</div>
+      <div class="kpi-label">Incidents</div>
+      <div class="kpi-value">23</div>
+    </div>
+    <div class="kpi-card loss-accent">
+      <div class="kpi-icon" style="background:#FEF2F2;">💰</div>
+      <div class="kpi-label">Total Cost</div>
+      <div class="kpi-value">$18,450</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:#F3F4F6;">📊</div>
+      <div class="kpi-label">Avg per Incident</div>
+      <div class="kpi-value">$802</div>
+    </div>
+  </div>
+
+  <div class="grid cols-8-4">
+    <div class="card">
+      <div class="card-header"><h3>Damage Detail</h3></div>
+      <div class="card-body">
+        <div class="table-scroll-tall">
+        <table>
+          <thead><tr><th>Date</th><th>Ref #</th><th>Client</th><th>Crew Leader</th><th>Description</th><th class="text-right">Cost</th></tr></thead>
+          <tbody>
+            <tr><td>03/12/2025</td><td>14780</td><td>Lakeside Homes</td><td>Josh R</td><td>Fence section damaged during removal</td><td class="text-right">$2,400.00</td></tr>
+            <tr><td>04/05/2025</td><td>14920</td><td>Main St Office</td><td>Jonathan M</td><td>Irrigation line hit</td><td class="text-right">$850.00</td></tr>
+            <tr><td>04/18/2025</td><td>15010</td><td>Cedar Park Res.</td><td>Josh R</td><td>Sod damage from equipment</td><td class="text-right">$1,200.00</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="totals-bar">
+          <div class="item"><span class="t-label">Incidents</span><span class="t-value">23</span></div>
+          <div class="item"><span class="t-label">Total Cost</span><span class="t-value">$18,450.00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>By Crew Leader</h3></div>
+      <div class="card-body padded">
+        <div class="crew-grid">
+          <div class="crew-item"><div class="name">Josh R</div><div class="value">$8,200</div><div class="sub">9 incidents</div></div>
+          <div class="crew-item"><div class="name">Jonathan M</div><div class="value">$5,100</div><div class="sub">7 incidents</div></div>
+          <div class="crew-item"><div class="name">Mike T</div><div class="value">$3,450</div><div class="sub">5 incidents</div></div>
+          <div class="crew-item"><div class="name">Tyler K</div><div class="value">$1,700</div><div class="sub">2 incidents</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 5: TIME DETAIL ===================== -->
+<div class="page" id="p5">
+  <div class="page-header"><div><h1>Time Detail</h1><div class="subtitle">Time tracking entries by employee and job</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) Added KPI row with total duration, employee count, and avg hours per entry — current page has no summary metrics. (2) Table wrapped in a card with totals bar. (3) "Total Duration" moved from below the table to the totals bar for consistency. (4) Duration column right-aligned with proper number formatting.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Employee</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Customer</label><select><option>All</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-3">
+    <div class="kpi-card"><div class="kpi-label">Total Hours</div><div class="kpi-value">12,480</div></div>
+    <div class="kpi-card"><div class="kpi-label">Entries</div><div class="kpi-value">30,076</div></div>
+    <div class="kpi-card"><div class="kpi-label">Employees</div><div class="kpi-value">47</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Time Entries</h3></div>
+    <div class="card-body">
+      <div class="table-scroll-tall">
+      <table>
+        <thead><tr><th>Date</th><th>Employee</th><th>Customer</th><th>Item</th><th class="text-right">Duration</th><th>Job #</th><th>Inv #</th><th>Operation</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>01/06/2025</td><td>Josh R</td><td>Smith Residence</td><td>Tree Removal</td><td class="text-right">4.50</td><td>J-4501</td><td>14201</td><td>Trees</td><td>Large oak removal</td></tr>
+          <tr><td>01/06/2025</td><td>Mike T</td><td>Smith Residence</td><td>Tree Removal</td><td class="text-right">4.50</td><td>J-4501</td><td>14201</td><td>Trees</td><td>Assist on oak</td></tr>
+          <tr><td>01/07/2025</td><td>Jonathan M</td><td>Oak Manor HOA</td><td>PHC Treatment</td><td class="text-right">2.25</td><td>J-4520</td><td>14250</td><td>PHC</td><td>Spray application</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="totals-bar">
+        <div class="item"><span class="t-label">Total Duration</span><span class="t-value">12,480.00 hrs</span></div>
+        <div class="item"><span class="t-label">Entries</span><span class="t-value">30,076</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 6: WINLOSS DETAILS ===================== -->
+<div class="page" id="p6">
+  <div class="page-header"><div><h1>Win/Loss Details</h1><div class="subtitle">Job-level Win/Loss with hours comparison</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) KPI row expanded from just "Count" to 4 cards: Total Jobs, Win Rate, Avg Hours Ratio, and Total Revenue. This gives the client the full story at a glance. (2) The two goal reference tables (Estimated/Actual Hours Goals) moved to a collapsible section — they're reference data that doesn't need to be always visible. (3) Win/Loss badge column added to make scanning the table faster than reading "Win"/"Loss" text. (4) HrsRatio column gets a mini progress bar showing how close to 1.0 the ratio is. (5) Dark totals bar replaces the inline "Totals —" text.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-4">
+    <div class="kpi-card"><div class="kpi-label">Total Jobs</div><div class="kpi-value">249</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Win Rate</div><div class="kpi-value">62%</div><div class="kpi-delta up">154 Wins</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg Hours Ratio</div><div class="kpi-value">1.14</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value">$482K</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Win / Loss for Period</h3></div>
+    <div class="card-body">
+      <div class="table-scroll-tall">
+      <table>
+        <thead><tr><th>Ref #</th><th>Status</th><th>Operation</th><th>Crew Leader</th><th>Invoice Date</th><th>Client</th><th class="text-right">Est Hrs</th><th class="text-right">Actual</th><th class="text-right">Ratio</th><th>Sales Rep</th></tr></thead>
+        <tbody>
+          <tr class="win-row"><td>14201</td><td><span class="badge win">Win</span></td><td>Trees</td><td>Josh R</td><td>01/20/2025</td><td>Smith Residence</td><td class="text-right">6.00</td><td class="text-right">4.50</td><td class="text-right">1.33</td><td>Tyler</td></tr>
+          <tr class="loss-row"><td>14250</td><td><span class="badge loss">Loss</span></td><td>PHC</td><td>Jonathan M</td><td>01/25/2025</td><td>Oak Manor HOA</td><td class="text-right">3.00</td><td class="text-right">4.75</td><td class="text-right">0.63</td><td>Mike</td></tr>
+          <tr class="win-row"><td>14305</td><td><span class="badge win">Win</span></td><td>Trees</td><td>Josh R</td><td>02/01/2025</td><td>Pine Valley CC</td><td class="text-right">8.00</td><td class="text-right">7.25</td><td class="text-right">1.10</td><td>Tyler</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="totals-bar">
+        <div class="item"><span class="t-label">Est Hours</span><span class="t-value">1,842.00</span></div>
+        <div class="item"><span class="t-label">Actual Hours</span><span class="t-value">1,615.50</span></div>
+        <div class="item"><span class="t-label">Wins</span><span class="t-value" style="color:#34D399;">154</span></div>
+        <div class="item"><span class="t-label">Losses</span><span class="t-value" style="color:#F87171;">95</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 7: WINLOSS SUMMARY ===================== -->
+<div class="page" id="p7">
+  <div class="page-header"><div><h1>Win/Loss Summary</h1><div class="subtitle">Hours vs goals tracking with YTD progress</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) KPI row expanded to show Win Rate, Avg Ratio, and % to Goal alongside the count. (2) The two side-by-side tables are retained but given card containers and proper formatting. (3) Added a visual progress indicator for "% to Goal" — a progress bar inside the table cell makes it scannable. (4) The "Monthly Average" table gets a variance column with color coding (green = over goal, red = under). (5) Overall: the page now tells a story — "here's where we are vs where we should be."
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-4">
+    <div class="kpi-card"><div class="kpi-label">Total Jobs</div><div class="kpi-value">249</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Win Rate</div><div class="kpi-value">62%</div></div>
+    <div class="kpi-card"><div class="kpi-label">YTD Hours</div><div class="kpi-value">1,842</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">% to Goal</div><div class="kpi-value">104%</div><div class="kpi-delta up">↑ 72 hrs over goal</div></div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <div class="card-header"><h3>Monthly Hours vs Goal</h3></div>
+      <div class="card-body">
+        <table>
+          <thead><tr><th>Month</th><th class="text-right">Hours</th><th class="text-right">Goal</th><th class="text-right">YTD Hrs</th><th class="text-right">YTD Goal</th><th>% to Goal</th></tr></thead>
+          <tbody>
+            <tr><td>January</td><td class="text-right">158</td><td class="text-right">150</td><td class="text-right">158</td><td class="text-right">150</td><td><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:6px;background:#E5E7EB;border-radius:3px;"><div style="width:100%;height:100%;background:var(--win);border-radius:3px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--win);">105%</span></div></td></tr>
+            <tr><td>February</td><td class="text-right">142</td><td class="text-right">150</td><td class="text-right">300</td><td class="text-right">300</td><td><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:6px;background:#E5E7EB;border-radius:3px;"><div style="width:95%;height:100%;background:var(--amber);border-radius:3px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--amber);">95%</span></div></td></tr>
+            <tr><td>March</td><td class="text-right">175</td><td class="text-right">150</td><td class="text-right">475</td><td class="text-right">450</td><td><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:6px;background:#E5E7EB;border-radius:3px;"><div style="width:100%;height:100%;background:var(--win);border-radius:3px;"></div></div><span style="font-size:12px;font-weight:600;color:var(--win);">106%</span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Yearly Average</h3></div>
+      <div class="card-body">
+        <table>
+          <thead><tr><th>Year</th><th class="text-right">Hrs/Mo</th><th class="text-right">Goal</th><th class="text-right">Variance</th><th class="text-right">% of Goal</th></tr></thead>
+          <tbody>
+            <tr><td>2025</td><td class="text-right">158</td><td class="text-right">150</td><td class="text-right" style="color:var(--win);font-weight:600;">+8</td><td class="text-right" style="color:var(--win);font-weight:600;">105%</td></tr>
+            <tr><td>2024</td><td class="text-right">145</td><td class="text-right">148</td><td class="text-right" style="color:var(--loss);font-weight:600;">-3</td><td class="text-right" style="color:var(--loss);font-weight:600;">98%</td></tr>
+            <tr><td>2023</td><td class="text-right">152</td><td class="text-right">145</td><td class="text-right" style="color:var(--win);font-weight:600;">+7</td><td class="text-right" style="color:var(--win);font-weight:600;">105%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 8: EST V ACTUAL ===================== -->
+<div class="page" id="p8">
+  <div class="page-header"><div><h1>Est v Actual</h1><div class="subtitle">Estimated hours vs actual hours by month</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) KPI row expanded from just "Count" to include Total Estimated, Total Actual, and the Efficiency Ratio. (2) Chart is now the hero element — given full width instead of sharing a row with a tiny reference table. (3) Chart changed from stacked bars (confusing — actual stacked on top of est makes them hard to compare) to grouped side-by-side bars, which makes the comparison obvious at a glance. (4) Reference table moved below the chart or into a collapsible section. (5) Added a difference line showing over/under estimate per month.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-4">
+    <div class="kpi-card"><div class="kpi-label">Jobs</div><div class="kpi-value">249</div></div>
+    <div class="kpi-card"><div class="kpi-label">Est. Hours</div><div class="kpi-value">1,842</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Actual Hours</div><div class="kpi-value">1,616</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Efficiency</div><div class="kpi-value">114%</div><div class="kpi-delta up">226 hrs saved</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Estimated vs Actual Hours by Month</h3></div>
+    <div class="card-body chart-area" style="min-height:320px;">
+      <div style="width:100%;display:flex;flex-direction:column;">
+        <div style="display:flex;gap:16px;justify-content:flex-end;margin-bottom:12px;font-size:12px;">
+          <span style="color:var(--blue);">● Estimated</span>
+          <span style="color:var(--win);">● Actual</span>
+        </div>
+        <div class="bar-chart" style="width:100%;height:240px;">
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:140px;width:24px;"></div><div class="bar actual" style="height:120px;width:24px;"></div></div><span class="bar-label">Jan</span></div>
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:160px;width:24px;"></div><div class="bar actual" style="height:130px;width:24px;"></div></div><span class="bar-label">Feb</span></div>
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:180px;width:24px;"></div><div class="bar actual" style="height:155px;width:24px;"></div></div><span class="bar-label">Mar</span></div>
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:200px;width:24px;"></div><div class="bar actual" style="height:175px;width:24px;"></div></div><span class="bar-label">Apr</span></div>
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:220px;width:24px;"></div><div class="bar actual" style="height:190px;width:24px;"></div></div><span class="bar-label">May</span></div>
+          <div class="bar-group"><div style="display:flex;gap:4px;align-items:flex-end;height:100%;"><div class="bar est" style="height:190px;width:24px;"></div><div class="bar actual" style="height:165px;width:24px;"></div></div><span class="bar-label">Jun</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 9: NOTES ===================== -->
+<div class="page" id="p9">
+  <div class="page-header"><div><h1>Notes</h1><div class="subtitle">Review notes and comments on jobs</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) KPI row shows count by review status (not just total count), giving the client a quick breakdown. (2) Review status displayed as colored badges in the table. (3) Notes columns get more width since they contain the important content — currently all columns are equal width which wastes space on short columns like Date and Ref #. (4) Table inside a card container with totals bar.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Review Status</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-3">
+    <div class="kpi-card"><div class="kpi-label">Total Notes</div><div class="kpi-value">156</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Reviewed</div><div class="kpi-value">128</div></div>
+    <div class="kpi-card amber-accent"><div class="kpi-label">Pending</div><div class="kpi-value">28</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>All Notes</h3></div>
+    <div class="card-body">
+      <div class="table-scroll-tall">
+      <table>
+        <thead><tr><th style="width:90px;">Date</th><th style="width:70px;">Ref #</th><th style="width:140px;">Client</th><th style="width:90px;">Status</th><th>Review Notes</th><th>Internal Notes</th></tr></thead>
+        <tbody>
+          <tr><td>01/20/2025</td><td>14201</td><td>Smith Residence</td><td><span class="badge win">Reviewed</span></td><td>Excellent work, client very satisfied with result</td><td>Crew completed ahead of schedule</td></tr>
+          <tr><td>01/25/2025</td><td>14250</td><td>Oak Manor HOA</td><td><span class="badge" style="background:#FFFBEB;color:#D97706;">Pending</span></td><td>Needs follow-up on fence area</td><td>Will revisit next week</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="totals-bar">
+        <div class="item"><span class="t-label">Total</span><span class="t-value">156</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE 10: OWNER ===================== -->
+<div class="page" id="p10">
+  <div class="page-header"><div><h1>Owner</h1><div class="subtitle">Full financial view — revenue, costs, and profitability</div></div></div>
+
+  <div class="design-note">
+    <strong>Changes from current:</strong> (1) KPI row is the big change — added Revenue, Net Revenue, Avg EPH, and Win Rate. The current page only shows "Count" which doesn't tell the owner anything useful. These are the numbers an owner actually cares about. (2) Table redesigned with Win/Loss badges, right-aligned financials, and the dark totals bar replacing the inline text totals. (3) Currency columns formatted consistently. (4) EPH and WL_EPH columns highlighted for quick scanning.
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group"><label>Year</label><select><option>2025</option></select></div>
+    <div class="filter-group"><label>Operation</label><select><option>All</option></select></div>
+    <div class="filter-group"><label>Month</label><select><option>All Months</option></select></div>
+    <div class="filter-group"><label>Crew Leader</label><select><option>All</option></select></div>
+  </div>
+
+  <div class="kpi-row cols-5">
+    <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value">$482K</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Net Revenue</div><div class="kpi-value">$341K</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg EPH</div><div class="kpi-value">$298</div></div>
+    <div class="kpi-card win-accent"><div class="kpi-label">Win Rate</div><div class="kpi-value">62%</div></div>
+    <div class="kpi-card"><div class="kpi-label">Jobs</div><div class="kpi-value">249</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Win / Loss for Period</h3></div>
+    <div class="card-body">
+      <div class="table-scroll-tall">
+      <table>
+        <thead><tr><th>Date</th><th>Ref #</th><th>Status</th><th>Client</th><th>Op</th><th class="text-right">Revenue</th><th class="text-right">Costs</th><th class="text-right">Net</th><th class="text-right">Est Hrs</th><th class="text-right">Actual</th><th class="text-right">Ratio</th><th class="text-right">EPH</th><th>Crew</th></tr></thead>
+        <tbody>
+          <tr class="win-row"><td>01/20</td><td>14201</td><td><span class="badge win">Win</span></td><td>Smith Res.</td><td>Trees</td><td class="text-right">$2,450</td><td class="text-right">$680</td><td class="text-right">$1,770</td><td class="text-right">6.00</td><td class="text-right">4.50</td><td class="text-right">1.33</td><td class="text-right" style="font-weight:600;color:var(--win);">$544</td><td>Josh R</td></tr>
+          <tr class="loss-row"><td>01/25</td><td>14250</td><td><span class="badge loss">Loss</span></td><td>Oak Manor</td><td>PHC</td><td class="text-right">$890</td><td class="text-right">$320</td><td class="text-right">$570</td><td class="text-right">3.00</td><td class="text-right">4.75</td><td class="text-right">0.63</td><td class="text-right">$187</td><td>Jonathan M</td></tr>
+          <tr class="win-row"><td>02/01</td><td>14305</td><td><span class="badge win">Win</span></td><td>Pine Valley</td><td>Trees</td><td class="text-right">$3,800</td><td class="text-right">$950</td><td class="text-right">$2,850</td><td class="text-right">8.00</td><td class="text-right">7.25</td><td class="text-right">1.10</td><td class="text-right" style="font-weight:600;color:var(--win);">$524</td><td>Josh R</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="totals-bar">
+        <div class="item"><span class="t-label">Revenue</span><span class="t-value">$482,350</span></div>
+        <div class="item"><span class="t-label">Costs</span><span class="t-value">$141,200</span></div>
+        <div class="item"><span class="t-label">Net</span><span class="t-value">$341,150</span></div>
+        <div class="item"><span class="t-label">Est Hrs</span><span class="t-value">1,842</span></div>
+        <div class="item"><span class="t-label">Actual Hrs</span><span class="t-value">1,616</span></div>
+        <div class="item"><span class="t-label">EPH</span><span class="t-value">$298</span></div>
+        <div class="item"><span class="t-label">WL EPH</span><span class="t-value">$342</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
