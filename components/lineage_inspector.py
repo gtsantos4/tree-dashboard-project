@@ -19,7 +19,72 @@ import streamlit as st
 
 from reports.stats.data.lineage import COLUMN_LINEAGE, KPI_LINEAGE
 from components.kpi_cards import metric_card
-from config import DEV_MODE, VY_RED
+from config import DEV_MODE, VY_RED, BORDER_COLOR
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Private: HTML table renderer (text wraps naturally in real HTML cells)
+# ═══════════════════════════════════════════════════════════════════════
+
+_TABLE_ID = 0  # auto-increment for unique table IDs
+
+def _html_table(df: pd.DataFrame, height: int = 500, fit_to_content: list[str] | None = None):
+    """Render a DataFrame as a scrollable, sortable HTML table with text wrapping.
+
+    fit_to_content: column names that should shrink to fit content width.
+    """
+    global _TABLE_ID
+    _TABLE_ID += 1
+    tid = f"vy_tbl_{_TABLE_ID}"
+    import html as _html
+    fit_set = set(fit_to_content or [])
+
+    def _cell_style(col: str, is_header: bool) -> str:
+        parts = [f"padding:{'10px 12px' if is_header else '8px 12px'};"]
+        parts.append(f"border-bottom:1px solid {BORDER_COLOR};text-align:left;")
+        if is_header:
+            parts.append(f"background:{VY_RED};color:#fff;font-weight:600;font-size:12px;")
+            parts.append("white-space:nowrap;min-width:95px;padding-right:20px;")  # fit label + sort arrow
+        else:
+            parts.append("font-size:13px;")
+        if col in fit_set and not is_header:
+            parts.append("width:1%;white-space:nowrap;")
+        elif col not in fit_set:
+            parts.append("white-space:normal;word-break:break-word;")
+        parts.append("vertical-align:top;")
+        return "".join(parts)
+
+    rows = []
+    # Header — sort indicators (click handled by iframe JS in app.py)
+    hdr_cells = []
+    for c in df.columns:
+        th_style = (
+            f'{_cell_style(c, True)}position:sticky;top:0;z-index:1;'
+            f'cursor:pointer;user-select:none;'
+        )
+        hdr_cells.append(
+            f'<th style="{th_style}white-space:nowrap;" title="Click to sort column">'
+            f'{_html.escape(str(c))}&nbsp;'
+            f'<span style="opacity:0.5;font-size:10px;">⇅</span></th>'
+        )
+    rows.append(f'<tr>{"".join(hdr_cells)}</tr>')
+    # Body
+    for _, row in df.iterrows():
+        cells = ""
+        for c in df.columns:
+            val = row[c]
+            val_str = "" if pd.isna(val) else str(val)
+            td_style = _cell_style(c, False)
+            cells += f'<td style="{td_style}">{_html.escape(val_str)}</td>'
+        rows.append(f"<tr>{cells}</tr>")
+
+    table_html = (
+        f'<div style="max-height:{height}px;overflow-y:auto;border:1px solid {BORDER_COLOR};'
+        f'border-radius:8px;">'
+        f'<table id="{tid}" style="width:100%;border-collapse:collapse;">'
+        f'{"".join(rows)}</table></div>'
+    )
+    st.markdown(table_html, unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -35,16 +100,27 @@ def inspectable_dataframe(
     ref_col: str = "Visit Ref #",
     key: str = "insp",
     height: int = 500,
+    fit_to_content_columns: list[str] | None = None,
 ):
     """
     Render a table with single-row selection (dev mode only).
     In client mode, renders a plain dataframe.
+
+    fit_to_content_columns: column names that should shrink to fit content width.
     """
     render = display_df if display_df is not None else df
 
     if not DEV_MODE:
-        st.dataframe(render, use_container_width=True, hide_index=True, height=height)
+        _html_table(render, height=height, fit_to_content=fit_to_content_columns)
         return
+
+    column_config = None
+    if fit_to_content_columns:
+        column_config = {
+            col: st.column_config.Column(width=None)  # fit to content
+            for col in fit_to_content_columns
+            if col in render.columns
+        }
 
     event = st.dataframe(
         render,
@@ -54,6 +130,7 @@ def inspectable_dataframe(
         on_select="rerun",
         selection_mode="single-row",
         key=key,
+        column_config=column_config,
     )
 
     selected = []

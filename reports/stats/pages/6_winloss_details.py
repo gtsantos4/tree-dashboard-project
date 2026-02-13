@@ -52,7 +52,11 @@ total_jobs = len(df)
 win_count = len(df[df["WinLossText"] == "Win"]) if not df.empty else 0
 loss_count = len(df[df["WinLossText"] == "Loss"]) if not df.empty else 0
 win_pct = (win_count / total_jobs * 100) if total_jobs > 0 else 0
-avg_hrs_ratio = df["HrsRatio"].mean() if not df.empty and "HrsRatio" in df.columns else 0
+# Avg Hours Ratio: only over jobs with actual time (exclude inf from TimeByInv=0)
+rows_with_time = (df["TimeByInv"] > 0) if not df.empty and "TimeByInv" in df.columns else pd.Series(dtype=bool)
+avg_hrs_ratio = df.loc[rows_with_time, "HrsRatio"].mean() if rows_with_time.any() and "HrsRatio" in df.columns else 0
+if pd.isna(avg_hrs_ratio):
+    avg_hrs_ratio = 0
 total_revenue = df["InvTotal"].sum() if not df.empty and "InvTotal" in df.columns else 0
 
 # Format revenue as "482K" style
@@ -68,25 +72,30 @@ kpi_items = [
     {
         "label": "Total Jobs",
         "value": total_jobs,
+        "icon": "📊",
     },
     {
         "label": "Win Rate",
         "value": f"{win_pct:.0f}%",
         "accent": "win",
-        "delta": f"{win_count} Wins",
+        "icon": "🏆",
     },
     {
         "label": "Avg Hours Ratio",
-        "value": round(avg_hrs_ratio, 2),
+        "value": f"{avg_hrs_ratio:.2f}",
+        "icon": "⚖️",
     },
     {
         "label": "Total Revenue",
         "prefix": "$",
         "value": rev_str,
+        "icon": "💰",
     },
 ]
 
 kpi_row(kpi_items, cols=4)
+
+st.markdown("")  # spacing
 
 # ── Win / Loss Detail Table ──────────────────────────────────────────
 with card_container("Win / Loss for Period"):

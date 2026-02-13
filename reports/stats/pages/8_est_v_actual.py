@@ -59,25 +59,31 @@ kpi_items = [
     {
         "label": "Jobs",
         "value": jobs,
+        "icon": "📊",
     },
     {
         "label": "Est. Hours",
         "value": f"{est_hours:,.0f}",
+        "icon": "📐",
     },
     {
         "label": "Actual Hours",
         "accent": "win",
         "value": f"{actual_hours:,.0f}",
+        "icon": "🕐",
     },
     {
         "label": "Efficiency",
         "accent": "win" if efficiency > 100 else None,
         "value": f"{efficiency:.0f}%",
         "delta": f"{hrs_saved:+,.0f} hrs saved" if hrs_saved >= 0 else f"{hrs_saved:+,.0f} hrs over",
+        "icon": "⚡",
     },
 ]
 
 kpi_row(kpi_items, cols=4)
+
+st.markdown("")  # spacing
 
 # ── Full-Width Chart Card ────────────────────────────────────────────
 with card_container("Estimated vs Actual Hours by Month"):

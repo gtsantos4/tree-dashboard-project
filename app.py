@@ -19,7 +19,8 @@ _CARD_BG_JS = (
     "if(parent._vyCSS)return;"
     "parent._vyCSS=true;"
     "var S=new WeakSet();"
-    "function run(){"
+    # ── White backgrounds for bordered containers ──
+    "function runCards(){"
     "try{"
     "var bc=parent.document.querySelector('.block-container');"
     "if(!bc)return;"
@@ -39,8 +40,87 @@ _CARD_BG_JS = (
     "el.style.setProperty('overflow','hidden','important');"
     "}}"
     "}catch(e){}}"
-    "parent.setInterval(run,500);"
-    "setTimeout(run,50);"
+    # ── Nav fix: show all pages, hide view-more buttons ──
+    "function runNavFix(){"
+    "try{"
+    "var sb=parent.document.querySelector('[data-testid=\"stSidebar\"]');"
+    "if(!sb)return;"
+    # Click "view more" to expand if Streamlit is in collapsed state
+    "sb.querySelectorAll('button,span,div,a').forEach(function(el){"
+    "var t=(el.textContent||'').trim().toLowerCase();"
+    "if(t==='view more'||t==='show more'||t==='view all'){"
+    "try{el.click();}catch(e){}"
+    "}});"
+    # Force every nav link and its ancestors visible
+    "sb.querySelectorAll('[data-testid=\"stSidebarNavLink\"]').forEach("
+    "function(l){"
+    "l.style.display='';"
+    "l.style.visibility='visible';"
+    "var p=l.parentElement;"
+    "while(p&&p!==sb){"
+    "p.style.display='';"
+    "p.style.maxHeight='none';"
+    "p.style.overflow='visible';"
+    "p=p.parentElement;}"
+    "});"
+    # Now hide the toggle button (which is "show less" after clicking)
+    "sb.querySelectorAll('button,span,div,a').forEach(function(el){"
+    "var t=(el.textContent||'').trim().toLowerCase();"
+    "if(t==='show less'||t==='view less'"
+    "||t==='view more'||t==='show more'||t==='view all'){"
+    "el.style.display='none';}});"
+    "}catch(e){}}"
+    # ── Sortable tables: attach click handlers to th in vy_tbl_* ──
+    "function runTableSort(){"
+    "try{"
+    "var doc=parent.document;"
+    "var tbls=doc.querySelectorAll('table[id^=\"vy_tbl_\"]');"
+    "tbls.forEach(function(tbl){"
+    "if(tbl._vySorted)return;"
+    "tbl._vySorted=true;"
+    "var ths=tbl.querySelectorAll('th');"
+    "ths.forEach(function(th,col){"
+    "th.style.cursor='pointer';"
+    "th.addEventListener('click',function(){"
+    "var body=tbl.querySelector('tbody')||tbl;"
+    "var rows=Array.from(body.querySelectorAll('tr'));"
+    "var hdrRow=rows.shift();"
+    "var dir=tbl.getAttribute('data-sd-'+col)==='asc'?'desc':'asc';"
+    "tbl.setAttribute('data-sd-'+col,dir);"
+    "rows.sort(function(a,b){"
+    "var at=(a.cells[col]||{}).textContent||'';"
+    "var bt=(b.cells[col]||{}).textContent||'';"
+    "var an=parseFloat(at.replace(/[^\\d.\\-]/g,''));"
+    "var bn=parseFloat(bt.replace(/[^\\d.\\-]/g,''));"
+    "if(!isNaN(an)&&!isNaN(bn))return dir==='asc'?an-bn:bn-an;"
+    "return dir==='asc'?at.localeCompare(bt):bt.localeCompare(at);"
+    "});"
+    "rows.forEach(function(r){body.appendChild(r);});"
+    "});});});"
+    "}catch(e){}}"
+    # ── Dataframe rows: pointer cursor + tooltip for clickable tables ──
+    "function runTableTooltips(){"
+    "try{"
+    "var doc=parent.document;"
+    "var dfs=doc.querySelectorAll('[data-testid=\"stDataFrame\"]');"
+    "dfs.forEach(function(block){"
+    "var tbl=block.querySelector('table');"
+    "if(!tbl)return;"
+    "var rows=tbl.querySelectorAll('tbody tr');"
+    "rows.forEach(function(tr){"
+    "tr.style.cursor='pointer';"
+    "if(!tr.getAttribute('title'))tr.setAttribute('title','Click to select row');"
+    "});"
+    "});"
+    "}catch(e){}}"
+    "parent.setInterval(runCards,500);"
+    "parent.setInterval(runNavFix,500);"
+    "parent.setInterval(runTableSort,500);"
+    "parent.setInterval(runTableTooltips,500);"
+    "setTimeout(runCards,50);"
+    "setTimeout(runNavFix,100);"
+    "setTimeout(runTableSort,150);"
+    "setTimeout(runTableTooltips,200);"
     "})();"
 )
 _SRCDOC = _html.escape("<script>" + _CARD_BG_JS + "</script>", quote=True)
@@ -72,6 +152,7 @@ st.markdown(f"""
     /* ── Dark sidebar ───────────────────────────────────────── */
     [data-testid="stSidebar"] {{
         background-color: {SIDEBAR_DARK};
+        position: relative !important;
     }}
     [data-testid="stSidebar"] * {{
         color: rgba(255,255,255,0.85) !important;
@@ -103,6 +184,7 @@ st.markdown(f"""
         gap: 0 !important;
         align-items: stretch !important;
         justify-content: flex-end !important;
+        position: relative !important;
     }}
     [data-testid="stSidebar"] [data-testid="stSidebarContent"] > * {{
         margin-top: 0 !important;
@@ -114,6 +196,25 @@ st.markdown(f"""
     }}
     .vy-sidebar-brand {{
         margin-bottom: 0 !important;
+    }}
+
+    /* ── Back / collapse arrow — pin to top-right of sidebar ── */
+    [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {{
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 999 !important;
+        order: -1 !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button {{
+        color: rgba(255,255,255,0.7) !important;
+        background: transparent !important;
+        border: none !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button:hover {{
+        color: white !important;
+        background: rgba(255,255,255,0.1) !important;
+        border-radius: 6px !important;
     }}
 
     /* Section headers in sidebar */
@@ -177,6 +278,8 @@ st.markdown(f"""
     .block-container {{
         padding-top: 1rem;
         padding-bottom: 1rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
         max-width: 1400px;
     }}
 
@@ -186,10 +289,22 @@ st.markdown(f"""
         color: white !important;
         font-weight: 600 !important;
         font-size: 13px !important;
+        min-width: 95px !important;
+        white-space: nowrap !important;
+        padding-right: 20px !important;
+    }}
+    /* Force description text to wrap in all tables */
+    .stDataFrame td {{
+        white-space: normal !important;
+        word-break: break-word !important;
     }}
     /* Horizontal scroll for tables on small screens */
     .stDataFrame {{
         overflow-x: auto;
+    }}
+    /* Clickable table rows (selection) — pointer cursor */
+    .stDataFrame tbody tr {{
+        cursor: pointer;
     }}
 
     /* ── Compact metrics ────────────────────────────────────── */
@@ -355,7 +470,6 @@ st.markdown(f"""
         .stDataFrame td, .stDataFrame th {{
             font-size: 11px !important;
             padding: 6px 8px !important;
-            white-space: nowrap;
         }}
 
         /* Plotly charts — reduce height */

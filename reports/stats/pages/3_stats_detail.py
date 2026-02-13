@@ -54,10 +54,10 @@ callbacks_count = int(df[df["Item Name"] == "Call Back"]["Qty"].sum())
 feedback_count = int(df[df["Item Name"] == "Crew Feedback"]["Qty"].sum())
 
 kpi_items = [
-    {"label": "Quality Control", "value": qc_count},
-    {"label": "Compliments", "value": compliments_count},
-    {"label": "Call Backs", "value": callbacks_count},
-    {"label": "Crew Feedback", "value": feedback_count},
+    {"label": "Quality Control", "value": qc_count, "icon": "📋"},
+    {"label": "Compliments", "value": compliments_count, "icon": "⭐"},
+    {"label": "Call Backs", "value": callbacks_count, "icon": "📞"},
+    {"label": "Crew Feedback", "value": feedback_count, "icon": "💬"},
 ]
 kpi_row(kpi_items, cols=4)
 
@@ -67,15 +67,17 @@ st.markdown("")  # spacing
 with card_container("All Stats Line Items"):
     display_cols = [
         "Approved Date", "Visit Ref #", "Job Ref #", "Client",
-        "Crew Leader", "Item Name", "Qty", "Line_Item_Description",
+        "Crew Leader", "Item Name", "Line_Item_Description",
     ]
     existing = [c for c in display_cols if c in df.columns]
     display = df[existing].copy()
-    display["Qty"] = display["Qty"].astype(int)
     if "Approved Date" in display.columns:
         display["Approved Date"] = display["Approved Date"].dt.strftime("%m/%d/%Y").fillna("")
 
-    inspectable_dataframe(df, display, source_so=so, key="sd_tbl", height=500)
+    inspectable_dataframe(
+        df, display, source_so=so, key="sd_tbl", height=500,
+        fit_to_content_columns=["Approved Date", "Visit Ref #", "Job Ref #", "Client", "Crew Leader", "Item Name"],
+    )
 
 # Totals bar
 totals_items = [

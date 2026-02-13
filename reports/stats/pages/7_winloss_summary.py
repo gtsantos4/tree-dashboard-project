@@ -77,25 +77,31 @@ kpi_items = [
     {
         "label": "Total Jobs",
         "value": total_jobs,
+        "icon": "📊",
     },
     {
         "label": "Win Rate",
         "value": f"{win_pct:.0f}%",
         "accent": "win",
+        "icon": "🏆",
     },
     {
         "label": "YTD Hours",
         "value": f"{ytd_hours:,.0f}",
+        "icon": "🕐",
     },
     {
         "label": "% to Goal",
         "value": f"{pct_to_goal:.0f}%",
         "accent": "win" if pct_to_goal >= 100 else None,
         "delta": f"{hrs_over_under:+,.0f} hrs",
+        "icon": "🎯",
     },
 ]
 
 kpi_row(kpi_items, cols=4)
+
+st.markdown("")  # spacing
 
 # ── Two Side-by-Side Tables ──────────────────────────────────────────
 t1, t2 = st.columns(2)

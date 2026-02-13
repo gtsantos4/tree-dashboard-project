@@ -143,7 +143,7 @@ def totals_bar(items: list[dict]):
     st.markdown(
         f'<div class="vy-totals-bar" style="background:{SIDEBAR_DARK};color:white;'
         f'padding:12px 20px;display:flex;gap:32px;font-size:13px;'
-        f'border-radius:0 0 12px 12px;">{inner}</div>',
+        f'border-radius:0 0 12px 12px;margin-bottom:20px;">{inner}</div>',
         unsafe_allow_html=True,
     )
 

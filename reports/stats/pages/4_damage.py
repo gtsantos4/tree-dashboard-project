@@ -6,7 +6,7 @@ from reports.stats.data.loader import load_all_line_items
 from reports.stats.data.transforms import build_so_line_items, build_damage, get_years
 from components.filters import apply_year, apply_crew_leader, crew_leader_filter
 from components.kpi_cards import metric_card_v2, kpi_row
-from components.styled_table import page_header, filter_container, card_container, totals_bar, crew_mini_cards, html_card
+from components.styled_table import page_header, filter_container, card_container, crew_mini_cards
 from components.lineage_inspector import inspectable_dataframe
 from config import DEV_MODE, LOSS_COLOR
 
@@ -25,7 +25,8 @@ page_header("Damage", "Damage repair incidents and costs")
 with filter_container():
     fc1, fc2 = st.columns([3, 2])
     with fc1:
-        sel_years = st.multiselect("Year", years, default=years[:3] if len(years) >= 3 else years, key="dmg_yr")
+        default_years = [2025] if 2025 in years else (years[:3] if len(years) >= 3 else years)
+        sel_years = st.multiselect("Year", years, default=default_years, key="dmg_yr")
     with fc2:
         sel_leader = crew_leader_filter(leaders, key="dmg_cl")
 
@@ -62,14 +63,10 @@ with c1:
         if "Line Total" in display.columns:
             display["Line Total"] = display["Line Total"].apply(lambda v: f"${v:,.2f}" if pd.notna(v) else "")
 
-        inspectable_dataframe(df, display, source_so=so, key="dmg_tbl", height=500)
-
-    # Totals bar below table
-    totals_items = [
-        {"label": "Incidents", "value": str(incident_count)},
-        {"label": "Total Cost", "value": f"${total_cost:,.2f}"},
-    ]
-    totals_bar(totals_items)
+        inspectable_dataframe(
+            df, display, source_so=so, key="dmg_tbl", height=500,
+            fit_to_content_columns=["Approved Date", "Visit Ref #", "Client", "Crew Leader", "Line Total"],
+        )
 
 with c2:
     if not df.empty and sel_years:

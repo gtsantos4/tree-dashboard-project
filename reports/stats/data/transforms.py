@@ -282,6 +282,16 @@ def build_time_detail(raw_time: pd.DataFrame) -> pd.DataFrame:
     # Boolean AddOn
     df["AddOn"] = df["AddOn"].str.upper().eq("TRUE")
 
+    # Keep only Tree and Plant Health Care operations (strip vacation, etc.)
+    df = df[df["Operation"].isin(["PHC", "Trees"])].copy()
+
+    # Exclude zero-duration rows
+    df = df[df["DURATION"] > 0].copy()
+
+    # Only 2025 onward
+    if "DATE" in df.columns:
+        df = df[df["DATE"].notna() & (df["DATE"].dt.year >= 2025)].copy()
+
     return df
 
 
@@ -295,8 +305,13 @@ def build_damage(so: pd.DataFrame) -> pd.DataFrame:
 # ── Notes table ──────────────────────────────────────────────────────
 
 def build_notes(so: pd.DataFrame) -> pd.DataFrame:
-    """Filter to records with a non-empty Review value."""
+    """Filter to records with a non-empty Review value.
+    Deduplicate by Visit Ref # — Review is at job level, but line items repeat it per row.
+    """
     df = so[so["Review"].str.strip() != ""].copy()
+    if "Visit Ref #" in df.columns and not df.empty:
+        # Keep one row per visit (first occurrence has the shared Review/notes)
+        df = df.drop_duplicates(subset=["Visit Ref #"], keep="first").copy()
     return df
 
 

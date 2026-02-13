@@ -15,7 +15,7 @@ from components.kpi_cards import (
     metric_card_v2, kpi_row, star_rating, box_rating, progress_bar,
 )
 from components.styled_table import (
-    page_header, filter_container, card_container, totals_bar
+    page_header, filter_container, card_container
 )
 from components.lineage_inspector import inspectable_dataframe
 from config import DEV_MODE
@@ -118,11 +118,6 @@ with card_container("Compliments / Call Backs"):
             )
         else:
             st.info("No call backs in selected period.")
-
-totals_bar([
-    {"label": "Compliments", "value": str(comp_count)},
-    {"label": "Call Backs", "value": str(cb_count)},
-])
 
 # ── Debug ────────────────────────────────────────────────────────────
 if DEV_MODE:

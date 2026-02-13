@@ -69,7 +69,7 @@ def metric_card_v2(
         else f"{prefix}{value}{suffix}"
     )
 
-    # Icon HTML
+    # Icon HTML — top-right corner
     icon_html = ""
     if icon:
         icon_bg = _ACCENT_BG.get(accent, "#F3F4F6")
@@ -101,8 +101,7 @@ def metric_card_v2(
         f'box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.03);">'
         f'{icon_html}'
         f'<div class="vy-kpi-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;'
-        f'color:{MEDIUM_GRAY};font-weight:600;margin-bottom:8px;'
-        f'padding-right:40px;">{label}</div>'
+        f'color:{MEDIUM_GRAY};font-weight:600;margin-bottom:8px;text-align:center;">{label}</div>'
         f'<div class="vy-kpi-value" style="font-size:28px;font-weight:700;color:{SIDEBAR_DARK};">'
         f'{formatted}</div>'
         f'{delta_html}'

@@ -78,30 +78,34 @@ win_rate = (win_count / total_count * 100) if total_count > 0 else 0
 kpi_row([
     {
         "label": "Total Revenue",
-        "prefix": "$",
         "value": _fmt_k(total_revenue),
+        "icon": "💰",
     },
     {
         "label": "Net Revenue",
-        "prefix": "$",
         "value": _fmt_k(net_revenue),
         "accent": "win",
+        "icon": "💵",
     },
     {
         "label": "Avg EPH",
-        "prefix": "$",
-        "value": f"{avg_eph:,.0f}",
+        "value": f"${avg_eph:,.0f}",
+        "icon": "📈",
     },
     {
         "label": "Win Rate",
         "value": f"{win_rate:.1f}%",
         "accent": "win",
+        "icon": "🏆",
     },
     {
         "label": "Jobs",
         "value": total_count,
+        "icon": "📊",
     },
 ], cols=5)
+
+st.markdown("")  # spacing
 
 # ── Table in card container ──────────────────────────────────────────
 if not df.empty:

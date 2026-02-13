@@ -49,18 +49,23 @@ kpi_row([
     {
         "label": "Total Notes",
         "value": total_count,
+        "icon": "📝",
     },
     {
         "label": "Reviewed",
         "value": reviewed_count,
         "accent": "win",
+        "icon": "✅",
     },
     {
         "label": "Pending",
         "value": pending_count,
         "accent": "amber",
+        "icon": "⏳",
     },
 ], cols=3)
+
+st.markdown("")  # spacing
 
 # ── Table in card container ──────────────────────────────────────────
 display_cols = [
